@@ -31,7 +31,7 @@ export default function LiveMatchScreen() {
         text: "Save",
         onPress: async () => {
           try {
-            await saveMatchAsync({
+            const matchData = {
               team1Player1: params.team1Player1 as string,
               team1Player2: params.team1Player2 as string,
               team2Player1: params.team2Player1 as string,
@@ -41,12 +41,21 @@ export default function LiveMatchScreen() {
               team1Games,
               team2Games,
               winner,
-            });
+            };
+
+            console.log("[Match Save] Starting match save with data:", matchData);
+
+            const result = await saveMatchAsync(matchData);
+
+            console.log("[Match Save] Success! Result:", result);
+
             Alert.alert("Success", "Match saved!", [
               { text: "OK", onPress: () => router.push("/(tabs)") },
             ]);
-          } catch (error) {
-            Alert.alert("Error", "Failed to save match. Please try again.");
+          } catch (error: any) {
+            console.error("[Match Save] Error:", error);
+            const errorMessage = error?.message || "Failed to save match. Please try again.";
+            Alert.alert("Error", errorMessage);
           }
         },
       },

@@ -54,3 +54,10 @@
 - [x] Add Greek language support with language toggle
 - [x] Create i18n (internationalization) system for Greek/English
 - [x] Update all screens with Greek translations
+
+## Bug Fixes - Update 3
+
+- [x] Fix match save not working - investigate API connection
+- [x] Add better error logging for debugging
+- [x] Verify database insert is working correctly
+- [x] Test end match flow end-to-end
