@@ -1,0 +1,198 @@
+export type Language = "en" | "el";
+
+export const translations = {
+  en: {
+    // Navigation & General
+    home: "Home",
+    settings: "Settings",
+    back: "Back",
+    cancel: "Cancel",
+    save: "Save",
+    delete: "Delete",
+    loading: "Loading...",
+    error: "Error",
+    success: "Success",
+
+    // Home Screen
+    welcomeTitle: "Smash Court Tennis",
+    welcomeSubtitle: "Track your doubles matches and climb the leaderboard",
+    startNewMatch: "🏁 Start New Match",
+    startNewMatchDesc: "Enter players and track the game",
+    viewStatistics: "📊 View Statistics",
+    viewStatisticsDesc: "Player rankings and team performance",
+    matchHistoryTitle: "📜 Match History",
+    matchHistoryDesc: "Review past matches",
+    quickStats: "Quick Stats",
+    matches: "Matches",
+    wins: "Wins",
+    winRate: "Win Rate",
+
+    // Auth
+    login: "Login",
+    register: "Register",
+    username: "Username",
+    password: "Password",
+    fullName: "Full Name",
+    confirmPassword: "Confirm Password",
+    loginTitle: "Welcome Back",
+    loginSubtitle: "Sign in to your account",
+    registerTitle: "Create Account",
+    registerSubtitle: "Join the tennis community",
+    alreadyHaveAccount: "Already have an account?",
+    dontHaveAccount: "Don't have an account?",
+    invalidCredentials: "Invalid username or password",
+    usernameTaken: "Username already taken",
+    passwordMismatch: "Passwords do not match",
+    registerSuccess: "Account created successfully!",
+    logout: "Logout",
+
+    // New Match
+    newMatchTitle: "New Match",
+    newMatchSubtitle: "Enter player names to get started",
+    team: "Team",
+    player: "Player",
+    selectPlayer: "Select a player",
+    selectPlayers: "Select players for both teams",
+    startMatch: "Start Match",
+    pleaseEnterAllPlayers: "Please select all players",
+
+    // Live Match
+    liveMatch: "Live Match",
+    endMatch: "End Match",
+    saving: "Saving...",
+    matchComplete: "Match Complete",
+    saveMatchQuestion: "Save this match to your history?",
+    matchNotComplete: "Match is not complete. One team must win more sets.",
+    matchSaved: "Match saved!",
+    failedToSaveMatch: "Failed to save match. Please try again.",
+
+    // Statistics
+    statistics: "Statistics",
+    playerRankings: "Player Rankings",
+    sortBy: "Sort by",
+    noMatches: "No matches yet",
+    startMatchToSeeStats: "Start a match to see player statistics",
+
+    // Match History
+    matchHistory: "Match History",
+    pastMatches: "Past matches",
+    deleteMatch: "Delete Match",
+    deleteMatchQuestion: "Are you sure you want to delete this match?",
+    failedToDeleteMatch: "Failed to delete match.",
+
+    // Settings
+    settingsTitle: "Settings",
+    appearance: "Appearance",
+    darkMode: "Dark Mode",
+    toggleDarkLight: "Toggle dark/light theme",
+    data: "Data",
+    exportData: "Export Data",
+    downloadMatchHistory: "Download your match history",
+    resetAllData: "Reset All Data",
+    deleteAllMatches: "Delete all matches and statistics",
+    about: "About",
+    version: "Version",
+    appDescription: "Track your doubles tennis matches and climb the leaderboard",
+    language: "Language",
+    selectLanguage: "Select your preferred language",
+  },
+  el: {
+    // Navigation & General
+    home: "Αρχική",
+    settings: "Ρυθμίσεις",
+    back: "Πίσω",
+    cancel: "Ακύρωση",
+    save: "Αποθήκευση",
+    delete: "Διαγραφή",
+    loading: "Φόρτωση...",
+    error: "Σφάλμα",
+    success: "Επιτυχία",
+
+    // Home Screen
+    welcomeTitle: "Smash Court Tennis",
+    welcomeSubtitle: "Παρακολουθήστε τους αγώνες σας και ανέβειτε στη λίστα κορυφής",
+    startNewMatch: "🏁 Νέος Αγώνας",
+    startNewMatchDesc: "Εισάγετε παίκτες και παρακολουθήστε το παιχνίδι",
+    viewStatistics: "📊 Στατιστικά",
+    viewStatisticsDesc: "Κατάταξη παικτών και απόδοση ομάδας",
+    matchHistoryTitle: "📜 Ιστορικό Αγώνων",
+    matchHistoryDesc: "Δείτε προηγούμενους αγώνες",
+    quickStats: "Γρήγορα Στατιστικά",
+    matches: "Αγώνες",
+    wins: "Νίκες",
+    winRate: "Ποσοστό Νικών",
+
+    // Auth
+    login: "Σύνδεση",
+    register: "Εγγραφή",
+    username: "Όνομα Χρήστη",
+    password: "Κωδικός Πρόσβασης",
+    fullName: "Πλήρες Όνομα",
+    confirmPassword: "Επιβεβαίωση Κωδικού",
+    loginTitle: "Καλώς Ήρθατε Πίσω",
+    loginSubtitle: "Συνδεθείτε στο λογαριασμό σας",
+    registerTitle: "Δημιουργία Λογαριασμού",
+    registerSubtitle: "Ενταχθείτε στην κοινότητα τένις",
+    alreadyHaveAccount: "Έχετε ήδη λογαριασμό;",
+    dontHaveAccount: "Δεν έχετε λογαριασμό;",
+    invalidCredentials: "Μη έγκυρο όνομα χρήστη ή κωδικός πρόσβασης",
+    usernameTaken: "Το όνομα χρήστη χρησιμοποιείται ήδη",
+    passwordMismatch: "Οι κωδικοί πρόσβασης δεν ταιριάζουν",
+    registerSuccess: "Ο λογαριασμός δημιουργήθηκε με επιτυχία!",
+    logout: "Αποσύνδεση",
+
+    // New Match
+    newMatchTitle: "Νέος Αγώνας",
+    newMatchSubtitle: "Εισάγετε ονόματα παικτών για να ξεκινήσετε",
+    team: "Ομάδα",
+    player: "Παίκτης",
+    selectPlayer: "Επιλέξτε παίκτη",
+    selectPlayers: "Επιλέξτε παίκτες και για τις δύο ομάδες",
+    startMatch: "Έναρξη Αγώνα",
+    pleaseEnterAllPlayers: "Παρακαλώ επιλέξτε όλους τους παίκτες",
+
+    // Live Match
+    liveMatch: "Ζωντανός Αγώνας",
+    endMatch: "Λήξη Αγώνα",
+    saving: "Αποθήκευση...",
+    matchComplete: "Αγώνας Ολοκληρώθηκε",
+    saveMatchQuestion: "Αποθηκεύσετε αυτόν τον αγώνα στο ιστορικό σας;",
+    matchNotComplete: "Ο αγώνας δεν έχει ολοκληρωθεί. Μια ομάδα πρέπει να κερδίσει περισσότερα σετ.",
+    matchSaved: "Ο αγώνας αποθηκεύθηκε!",
+    failedToSaveMatch: "Αποτυχία αποθήκευσης αγώνα. Παρακαλώ δοκιμάστε ξανά.",
+
+    // Statistics
+    statistics: "Στατιστικά",
+    playerRankings: "Κατάταξη Παικτών",
+    sortBy: "Ταξινόμηση κατά",
+    noMatches: "Κανένας αγώνας ακόμα",
+    startMatchToSeeStats: "Ξεκινήστε έναν αγώνα για να δείτε στατιστικά παικτών",
+
+    // Match History
+    matchHistory: "Ιστορικό Αγώνων",
+    pastMatches: "Προηγούμενοι αγώνες",
+    deleteMatch: "Διαγραφή Αγώνα",
+    deleteMatchQuestion: "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτόν τον αγώνα;",
+    failedToDeleteMatch: "Αποτυχία διαγραφής αγώνα.",
+
+    // Settings
+    settingsTitle: "Ρυθμίσεις",
+    appearance: "Εμφάνιση",
+    darkMode: "Σκοτεινή Λειτουργία",
+    toggleDarkLight: "Εναλλαγή σκοτεινής/ανοιχτής λειτουργίας",
+    data: "Δεδομένα",
+    exportData: "Εξαγωγή Δεδομένων",
+    downloadMatchHistory: "Κατεβάστε το ιστορικό αγώνων σας",
+    resetAllData: "Επαναφορά Όλων των Δεδομένων",
+    deleteAllMatches: "Διαγράψτε όλους τους αγώνες και τα στατιστικά",
+    about: "Σχετικά",
+    version: "Έκδοση",
+    appDescription: "Παρακολουθήστε τους αγώνες τένις διπλών και ανέβειτε στη λίστα κορυφής",
+    language: "Γλώσσα",
+    selectLanguage: "Επιλέξτε την προτιμώμενη γλώσσα σας",
+  },
+};
+
+export function t(key: keyof typeof translations.en, language: Language): string {
+  return translations[language][key as keyof typeof translations[Language]] || key;
+}

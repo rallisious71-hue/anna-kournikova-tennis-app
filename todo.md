@@ -44,3 +44,13 @@
 - [ ] Cross-platform testing (iOS/Android/Web)
 - [ ] Performance optimization
 
+
+## New Features - Update 2
+
+- [x] User registration/login system with username and password
+- [x] Players table in database to store registered users
+- [x] Player selection dropdown in New Match screen
+- [x] Fix End Match functionality to properly save matches
+- [x] Add Greek language support with language toggle
+- [x] Create i18n (internationalization) system for Greek/English
+- [x] Update all screens with Greek translations

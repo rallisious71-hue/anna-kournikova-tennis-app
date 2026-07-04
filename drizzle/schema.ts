@@ -76,3 +76,23 @@ export const playerStats = mysqlTable("playerStats", {
 
 export type PlayerStats = typeof playerStats.$inferSelect;
 export type InsertPlayerStats = typeof playerStats.$inferInsert;
+
+/**
+ * Players table - stores registered players for the tennis app
+ */
+export const players = mysqlTable("players", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Player's full name */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** Username for login */
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  /** Hashed password */
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  /** Account creation date */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  /** Last update */
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Player = typeof players.$inferSelect;
+export type InsertPlayer = typeof players.$inferInsert;

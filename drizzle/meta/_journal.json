@@ -15,6 +15,13 @@
       "when": 1783139426090,
       "tag": "0001_flippant_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1783151391450,
+      "tag": "0002_early_kingpin",
+      "breakpoints": true
     }
   ]
 }
