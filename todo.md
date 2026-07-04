@@ -84,3 +84,11 @@
 - [x] Increase font sizes for better readability
 - [x] Ensure maximum contrast between text and background colors
 - [x] Fix text clarity in both light and dark modes
+
+## Critical Bug - Update 7
+
+- [x] End Match button not saving matches to database
+- [x] Investigate API connection and error handling
+- [x] Check if Alert.alert is preventing save operation
+- [x] Verify database connection and match insertion
+- [x] Fix missing imports in tennis router
