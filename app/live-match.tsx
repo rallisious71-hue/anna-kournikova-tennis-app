@@ -12,10 +12,11 @@ export default function LiveMatchScreen() {
   const [team2Sets, setTeam2Sets] = useState(0);
   const [team1Games, setTeam1Games] = useState(0);
   const [team2Games, setTeam2Games] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const { saveMatchAsync, isSavingMatch } = useTennisApi();
+  const { saveMatchAsync } = useTennisApi();
 
-  const handleEndMatch = () => {
+  const handleEndMatch = async () => {
     let winner = 0;
     if (team1Sets > team2Sets) winner = 1;
     else if (team2Sets > team1Sets) winner = 2;
@@ -24,41 +25,36 @@ export default function LiveMatchScreen() {
       return;
     }
 
-    Alert.alert("Match Complete", "Save this match to your history?", [
-      { text: "Cancel", onPress: () => {} },
-      {
-        text: "Save",
-        onPress: async () => {
-          try {
-            const matchData = {
-              team1Player1: params.team1Player1 as string,
-              team1Player2: params.team1Player2 as string,
-              team2Player1: params.team2Player1 as string,
-              team2Player2: params.team2Player2 as string,
-              team1Sets,
-              team2Sets,
-              team1Games,
-              team2Games,
-              winner,
-            };
+    setIsSaving(true);
+    try {
+      const matchData = {
+        team1Player1: params.team1Player1 as string,
+        team1Player2: params.team1Player2 as string,
+        team2Player1: params.team2Player1 as string,
+        team2Player2: params.team2Player2 as string,
+        team1Sets,
+        team2Sets,
+        team1Games,
+        team2Games,
+        winner,
+      };
 
-            console.log("[Match Save] Starting match save with data:", matchData);
+      console.log("[Match Save] Starting match save with data:", matchData);
 
-            const result = await saveMatchAsync(matchData);
+      const result = await saveMatchAsync(matchData);
 
-            console.log("[Match Save] Success! Result:", result);
+      console.log("[Match Save] Success! Result:", result);
 
-            Alert.alert("Success", "Match saved!", [
-              { text: "OK", onPress: () => router.push("/(tabs)") },
-            ]);
-          } catch (error: any) {
-            console.error("[Match Save] Error:", error);
-            const errorMessage = error?.message || "Failed to save match. Please try again.";
-            Alert.alert("Error", errorMessage);
-          }
-        },
-      },
-    ]);
+      Alert.alert("Success", "Match saved!", [
+        { text: "OK", onPress: () => router.push("/(tabs)") },
+      ]);
+    } catch (error: any) {
+      console.error("[Match Save] Error:", error);
+      const errorMessage = error?.message || "Failed to save match. Please try again.";
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleResetScores = () => {
@@ -193,11 +189,11 @@ export default function LiveMatchScreen() {
           <View className="gap-3 mt-4">
             <TouchableOpacity
               onPress={handleEndMatch}
-              disabled={isSavingMatch}
+              disabled={isSaving}
               className="bg-primary rounded-lg py-4 active:opacity-80 disabled:opacity-50"
             >
               <Text className="text-white font-bold text-center text-lg">
-                {isSavingMatch ? "Saving..." : "End Match"}
+                {isSaving ? "Saving..." : "End Match"}
               </Text>
             </TouchableOpacity>
 
