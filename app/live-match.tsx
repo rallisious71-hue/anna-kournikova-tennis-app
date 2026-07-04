@@ -101,13 +101,13 @@ export default function LiveMatchScreen() {
 
             {/* Sets and Games Display */}
             <View className="flex-row gap-4">
-              <View className="flex-1 bg-white bg-opacity-20 rounded-lg p-4 items-center">
-                <Text className="text-4xl font-bold text-white">{team1Sets}</Text>
-                <Text className="text-xs text-white mt-1">Sets</Text>
+              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
+                <Text className="text-4xl font-bold text-accent">{team1Sets}</Text>
+                <Text className="text-xs text-accent mt-1">Sets</Text>
               </View>
-              <View className="flex-1 bg-white bg-opacity-20 rounded-lg p-4 items-center">
-                <Text className="text-4xl font-bold text-white">{team1Games}</Text>
-                <Text className="text-xs text-white mt-1">Games</Text>
+              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
+                <Text className="text-4xl font-bold text-accent">{team1Games}</Text>
+                <Text className="text-xs text-accent mt-1">Games</Text>
               </View>
             </View>
 
@@ -151,11 +151,11 @@ export default function LiveMatchScreen() {
 
             {/* Sets and Games Display */}
             <View className="flex-row gap-4">
-              <View className="flex-1 bg-white bg-opacity-20 rounded-lg p-4 items-center">
+              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
                 <Text className="text-4xl font-bold text-white">{team2Sets}</Text>
                 <Text className="text-xs text-white mt-1">Sets</Text>
               </View>
-              <View className="flex-1 bg-white bg-opacity-20 rounded-lg p-4 items-center">
+              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
                 <Text className="text-4xl font-bold text-white">{team2Games}</Text>
                 <Text className="text-xs text-white mt-1">Games</Text>
               </View>
