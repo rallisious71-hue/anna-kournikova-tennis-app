@@ -16,7 +16,6 @@ export default function LiveMatchScreen() {
   const { saveMatchAsync, isSavingMatch } = useTennisApi();
 
   const handleEndMatch = () => {
-    // Determine winner
     let winner = 0;
     if (team1Sets > team2Sets) winner = 1;
     else if (team2Sets > team1Sets) winner = 2;
@@ -85,29 +84,29 @@ export default function LiveMatchScreen() {
           {/* Match Header */}
           <View className="gap-2">
             <Text className="text-2xl font-bold text-foreground text-center">Live Match</Text>
-            <Text className="text-xs text-muted text-center">
+            <Text className="text-xs text-foreground text-center">
               {params.team1Player1} & {params.team1Player2} vs {params.team2Player1} & {params.team2Player2}
             </Text>
           </View>
 
           {/* Team 1 Score Card */}
-          <View className="bg-accent rounded-2xl p-6 gap-4">
+          <View className="bg-primary rounded-2xl p-6 gap-4">
             <View className="gap-1">
-              <Text className="text-sm font-semibold text-white opacity-90">Team 1</Text>
-              <Text className="text-xs text-white opacity-75">
+              <Text className="text-sm font-bold text-white">Team 1</Text>
+              <Text className="text-xs text-white">
                 {params.team1Player1} & {params.team1Player2}
               </Text>
             </View>
 
             {/* Sets and Games Display */}
             <View className="flex-row gap-4">
-              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
-                <Text className="text-4xl font-bold text-accent">{team1Sets}</Text>
-                <Text className="text-xs text-accent mt-1">Sets</Text>
+              <View className="flex-1 bg-white rounded-lg p-4 items-center">
+                <Text className="text-5xl font-bold text-primary">{team1Sets}</Text>
+                <Text className="text-sm font-bold text-primary mt-1">Sets</Text>
               </View>
-              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
-                <Text className="text-4xl font-bold text-accent">{team1Games}</Text>
-                <Text className="text-xs text-accent mt-1">Games</Text>
+              <View className="flex-1 bg-white rounded-lg p-4 items-center">
+                <Text className="text-5xl font-bold text-primary">{team1Games}</Text>
+                <Text className="text-sm font-bold text-primary mt-1">Games</Text>
               </View>
             </View>
 
@@ -123,13 +122,13 @@ export default function LiveMatchScreen() {
                 onPress={() => setTeam1Games(team1Games + 1)}
                 className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
               >
-                <Text className="text-accent font-bold text-center">+1 Game</Text>
+                <Text className="text-primary font-bold text-center">+1 Game</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam1Sets(team1Sets + 1)}
                 className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
               >
-                <Text className="text-accent font-bold text-center">+1 Set</Text>
+                <Text className="text-primary font-bold text-center">+1 Set</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam1Sets(Math.max(0, team1Sets - 1))}
@@ -143,21 +142,21 @@ export default function LiveMatchScreen() {
           {/* Team 2 Score Card */}
           <View className="bg-error rounded-2xl p-6 gap-4">
             <View className="gap-1">
-              <Text className="text-sm font-semibold text-white opacity-90">Team 2</Text>
-              <Text className="text-xs text-white opacity-75">
+              <Text className="text-sm font-bold text-white">Team 2</Text>
+              <Text className="text-xs text-white">
                 {params.team2Player1} & {params.team2Player2}
               </Text>
             </View>
 
             {/* Sets and Games Display */}
             <View className="flex-row gap-4">
-              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
-                <Text className="text-4xl font-bold text-white">{team2Sets}</Text>
-                <Text className="text-xs text-white mt-1">Sets</Text>
+              <View className="flex-1 bg-white rounded-lg p-4 items-center">
+                <Text className="text-5xl font-bold text-error">{team2Sets}</Text>
+                <Text className="text-sm font-bold text-error mt-1">Sets</Text>
               </View>
-              <View className="flex-1 bg-white bg-opacity-30 rounded-lg p-4 items-center border border-white border-opacity-50">
-                <Text className="text-4xl font-bold text-white">{team2Games}</Text>
-                <Text className="text-xs text-white mt-1">Games</Text>
+              <View className="flex-1 bg-white rounded-lg p-4 items-center">
+                <Text className="text-5xl font-bold text-error">{team2Games}</Text>
+                <Text className="text-sm font-bold text-error mt-1">Games</Text>
               </View>
             </View>
 
@@ -173,13 +172,13 @@ export default function LiveMatchScreen() {
                 onPress={() => setTeam2Games(team2Games + 1)}
                 className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
               >
-                <Text className="text-white font-bold text-center">+1 Game</Text>
+                <Text className="text-error font-bold text-center">+1 Game</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam2Sets(team2Sets + 1)}
                 className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
               >
-                <Text className="text-white font-bold text-center">+1 Set</Text>
+                <Text className="text-error font-bold text-center">+1 Set</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam2Sets(Math.max(0, team2Sets - 1))}

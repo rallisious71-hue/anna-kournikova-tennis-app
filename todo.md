@@ -77,3 +77,10 @@
 - [x] Fix color contrast issues where text is same color as background
 - [x] Add reset button for match scores (sets and games)
 - [x] Ensure all UI elements have proper contrast in both light and dark modes
+
+## Bug Fixes - Update 6
+
+- [x] Make all text crystal clear with white backgrounds on score display boxes
+- [x] Increase font sizes for better readability
+- [x] Ensure maximum contrast between text and background colors
+- [x] Fix text clarity in both light and dark modes
