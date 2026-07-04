@@ -1,6 +1,6 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTennisApi } from "@/hooks/use-tennis-api";
 
@@ -13,8 +13,21 @@ export default function LiveMatchScreen() {
   const [team1Games, setTeam1Games] = useState(0);
   const [team2Games, setTeam2Games] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+  const [lastMatchId, setLastMatchId] = useState<number | null>(null);
+  const [showUndo, setShowUndo] = useState(false);
+  const [isUndoing, setIsUndoing] = useState(false);
 
-  const { saveMatchAsync } = useTennisApi();
+  const { saveMatchAsync, deleteMatchAsync } = useTennisApi();
+
+  // Auto-hide undo button after 30 seconds
+  useEffect(() => {
+    if (showUndo) {
+      const timer = setTimeout(() => {
+        setShowUndo(false);
+      }, 30000);
+      return () => clearTimeout(timer);
+    }
+  }, [showUndo]);
 
   const handleEndMatch = async () => {
     let winner = 0;
@@ -45,8 +58,15 @@ export default function LiveMatchScreen() {
 
       console.log("[Match Save] Success! Result:", result);
 
-      Alert.alert("Success", "Match saved!", [
-        { text: "OK", onPress: () => router.push("/(tabs)") },
+      // Extract match ID from result if available
+      if (result && typeof result === "object" && "id" in result) {
+        setLastMatchId((result as any).id);
+      }
+
+      setShowUndo(true);
+
+      Alert.alert("Success", "Match saved! You can undo this action for 30 seconds.", [
+        { text: "OK", onPress: () => {} },
       ]);
     } catch (error: any) {
       console.error("[Match Save] Error:", error);
@@ -54,6 +74,31 @@ export default function LiveMatchScreen() {
       Alert.alert("Error", errorMessage);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleUndo = async () => {
+    if (!lastMatchId) {
+      Alert.alert("Error", "No match to undo");
+      return;
+    }
+
+    setIsUndoing(true);
+    try {
+      await deleteMatchAsync({ matchId: lastMatchId });
+
+      setShowUndo(false);
+      setLastMatchId(null);
+
+      Alert.alert("Undo Successful", "Match has been deleted.", [
+        { text: "OK", onPress: () => {} },
+      ]);
+    } catch (error: any) {
+      console.error("[Match Undo] Error:", error);
+      const errorMessage = error?.message || "Failed to undo match. Please try again.";
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setIsUndoing(false);
     }
   };
 
@@ -196,6 +241,18 @@ export default function LiveMatchScreen() {
                 {isSaving ? "Saving..." : "End Match"}
               </Text>
             </TouchableOpacity>
+
+            {showUndo && (
+              <TouchableOpacity
+                onPress={handleUndo}
+                disabled={isUndoing}
+                className="bg-warning rounded-lg py-4 active:opacity-80 disabled:opacity-50"
+              >
+                <Text className="text-white font-bold text-center">
+                  {isUndoing ? "Undoing..." : "Αναίρεση (Undo)"}
+                </Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
               onPress={handleResetScores}

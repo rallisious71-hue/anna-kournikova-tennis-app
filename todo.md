@@ -92,3 +92,11 @@
 - [x] Check if Alert.alert is preventing save operation
 - [x] Verify database connection and match insertion
 - [x] Fix missing imports in tennis router
+
+## New Feature - Update 8
+
+- [x] Add Undo button that appears after match save
+- [x] Store last saved match ID for undo functionality
+- [x] Implement delete match API call for undo
+- [x] Show success message after undo
+- [x] Auto-hide undo button after 30 seconds or navigation
