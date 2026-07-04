@@ -1,17 +1,19 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert, Switch } from "react-native";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { ScreenContainer } from "@/components/screen-container";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useLanguage } from "@/lib/language-context";
+import { useThemeContext } from "@/lib/theme-provider";
 import { t } from "@/lib/i18n/translations";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { language, setLanguage } = useLanguage();
-  const colorScheme = useColorScheme();
-  const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
+  const { colorScheme, setColorScheme } = useThemeContext();
+
+  const handleDarkModeToggle = (value: boolean) => {
+    setColorScheme(value ? "dark" : "light");
+  };
 
   const handleLogout = async () => {
     Alert.alert(t("logout", language), language === "en" ? "Are you sure?" : "Είστε σίγουροι;", [
@@ -99,8 +101,8 @@ export default function SettingsScreen() {
                 <Text className="text-xs text-muted">{t("toggleDarkLight", language)}</Text>
               </View>
               <Switch
-                value={isDarkMode}
-                onValueChange={setIsDarkMode}
+                value={colorScheme === "dark"}
+                onValueChange={handleDarkModeToggle}
               />
             </View>
           </View>

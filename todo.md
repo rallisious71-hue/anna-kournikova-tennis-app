@@ -70,3 +70,10 @@
 - [x] Add delete button to match history items
 - [x] Add confirmation dialogs for delete operations
 - [x] Recalculate player statistics after edit/delete
+
+## Bug Fixes - Update 5
+
+- [x] Fix dark mode toggle not working on mobile
+- [x] Fix color contrast issues where text is same color as background
+- [x] Add reset button for match scores (sets and games)
+- [x] Ensure all UI elements have proper contrast in both light and dark modes

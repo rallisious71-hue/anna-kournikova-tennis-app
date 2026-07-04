@@ -52,6 +52,22 @@ export default function EditMatchScreen() {
     }
   };
 
+  const handleResetScores = () => {
+    Alert.alert("Reset Scores", "Reset all scores to 0?", [
+      { text: "Cancel", onPress: () => {} },
+      {
+        text: "Reset",
+        onPress: () => {
+          setTeam1Sets(0);
+          setTeam2Sets(0);
+          setTeam1Games(0);
+          setTeam2Games(0);
+        },
+        style: "destructive",
+      },
+    ]);
+  };
+
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
@@ -147,13 +163,13 @@ export default function EditMatchScreen() {
                 onPress={() => setTeam2Games(team2Games + 1)}
                 className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
               >
-                <Text className="text-error font-bold text-center">+1 Game</Text>
+                <Text className="text-white font-bold text-center">+1 Game</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam2Sets(team2Sets + 1)}
                 className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
               >
-                <Text className="text-error font-bold text-center">+1 Set</Text>
+                <Text className="text-white font-bold text-center">+1 Set</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam2Sets(Math.max(0, team2Sets - 1))}
@@ -174,6 +190,13 @@ export default function EditMatchScreen() {
               <Text className="text-white font-bold text-center text-lg">
                 {isSaving ? "Saving..." : "Save Changes"}
               </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleResetScores}
+              className="bg-warning rounded-lg py-4 active:opacity-80"
+            >
+              <Text className="text-white font-bold text-center">Reset Scores</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
