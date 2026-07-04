@@ -61,3 +61,12 @@
 - [x] Add better error logging for debugging
 - [x] Verify database insert is working correctly
 - [x] Test end match flow end-to-end
+
+## New Features - Update 4
+
+- [x] Create edit match screen with score modification
+- [x] Add API endpoint to update match in database
+- [x] Add edit button to match history items
+- [x] Add delete button to match history items
+- [x] Add confirmation dialogs for delete operations
+- [x] Recalculate player statistics after edit/delete

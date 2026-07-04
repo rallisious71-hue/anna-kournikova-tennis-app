@@ -73,6 +73,47 @@ export const tennisRouter = router({
   }),
 
   /**
+   * Update an existing match
+   */
+  updateMatch: publicProcedure
+    .input(
+      z.object({
+        matchId: z.number(),
+        team1Sets: z.number(),
+        team2Sets: z.number(),
+        team1Games: z.number(),
+        team2Games: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const match = await db.select().from(matches).where(eq(matches.id, input.matchId)).limit(1);
+
+      if (match.length === 0) {
+        throw new Error("Match not found");
+      }
+
+      let winner = 0;
+      if (input.team1Sets > input.team2Sets) winner = 1;
+      else if (input.team2Sets > input.team1Sets) winner = 2;
+
+      await db
+        .update(matches)
+        .set({
+          team1Sets: input.team1Sets,
+          team2Sets: input.team2Sets,
+          team1Games: input.team1Games,
+          team2Games: input.team2Games,
+          winner,
+        })
+        .where(eq(matches.id, input.matchId));
+
+      return { success: true };
+    }),
+
+  /**
    * Delete a match and update player statistics
    */
   deleteMatch: publicProcedure

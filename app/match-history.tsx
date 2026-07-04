@@ -3,19 +3,28 @@ import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTennisApi } from "@/hooks/use-tennis-api";
+import { useLanguage } from "@/lib/language-context";
+import { t } from "@/lib/i18n/translations";
 
 interface MatchRecord {
   id: number;
+  team1Player1: string;
+  team1Player2: string;
+  team2Player1: string;
+  team2Player2: string;
   team1: string;
   team2: string;
   team1Sets: number;
   team2Sets: number;
+  team1Games: number;
+  team2Games: number;
   winner: 1 | 2;
   date: string;
 }
 
 export default function MatchHistoryScreen() {
   const router = useRouter();
+  const { language } = useLanguage();
   const { matchHistory, isLoadingHistory, deleteMatchAsync } = useTennisApi();
   const [matches, setMatches] = useState<MatchRecord[]>([]);
 
@@ -23,10 +32,16 @@ export default function MatchHistoryScreen() {
     if (matchHistory && matchHistory.length > 0) {
       const formatted = matchHistory.map((m) => ({
         id: m.id,
+        team1Player1: m.team1Player1,
+        team1Player2: m.team1Player2,
+        team2Player1: m.team2Player1,
+        team2Player2: m.team2Player2,
         team1: `${m.team1Player1} & ${m.team1Player2}`,
         team2: `${m.team2Player1} & ${m.team2Player2}`,
         team1Sets: m.team1Sets,
         team2Sets: m.team2Sets,
+        team1Games: m.team1Games,
+        team2Games: m.team2Games,
         winner: (m.winner || 0) as 1 | 2,
         date: new Date(m.matchDate).toLocaleDateString(),
       }));
@@ -35,21 +50,38 @@ export default function MatchHistoryScreen() {
   }, [matchHistory]);
 
   const handleDeleteMatch = (id: number) => {
-    Alert.alert("Delete Match", "Are you sure you want to delete this match?", [
-      { text: "Cancel", onPress: () => {} },
+    Alert.alert(t("deleteMatch", language), language === "en" ? "Are you sure?" : "Είστε σίγουροι;", [
+      { text: t("cancel", language), onPress: () => {} },
       {
-        text: "Delete",
+        text: t("delete", language),
         onPress: async () => {
           try {
             await deleteMatchAsync({ matchId: id });
             setMatches(matches.filter((m) => m.id !== id));
           } catch (error) {
-            Alert.alert("Error", "Failed to delete match.");
+            Alert.alert(t("error", language), "Failed to delete match.");
           }
         },
         style: "destructive",
       },
     ]);
+  };
+
+  const handleEditMatch = (match: MatchRecord) => {
+    router.push({
+      pathname: "/edit-match",
+      params: {
+        matchId: match.id,
+        team1Player1: match.team1Player1,
+        team1Player2: match.team1Player2,
+        team2Player1: match.team2Player1,
+        team2Player2: match.team2Player2,
+        team1Sets: match.team1Sets,
+        team2Sets: match.team2Sets,
+        team1Games: match.team1Games,
+        team2Games: match.team2Games,
+      },
+    });
   };
 
   const renderMatchRow = ({ item }: { item: MatchRecord }) => (
@@ -77,12 +109,20 @@ export default function MatchHistoryScreen() {
       </View>
       <View className="flex-row items-center justify-between">
         <Text className="text-foreground font-semibold">{item.team2}</Text>
-        <TouchableOpacity
-          onPress={() => handleDeleteMatch(item.id)}
-          className="px-3 py-1 rounded bg-error bg-opacity-10"
-        >
-          <Text className="text-error text-xs font-semibold">Delete</Text>
-        </TouchableOpacity>
+        <View className="flex-row gap-2">
+          <TouchableOpacity
+            onPress={() => handleEditMatch(item)}
+            className="px-3 py-1 rounded bg-primary bg-opacity-10"
+          >
+            <Text className="text-primary text-xs font-semibold">Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleDeleteMatch(item.id)}
+            className="px-3 py-1 rounded bg-error bg-opacity-10"
+          >
+            <Text className="text-error text-xs font-semibold">{t("delete", language)}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -94,8 +134,8 @@ export default function MatchHistoryScreen() {
           {/* Header */}
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-3xl font-bold text-foreground">Match History</Text>
-              <Text className="text-sm text-muted mt-1">Past matches</Text>
+              <Text className="text-3xl font-bold text-foreground">{t("matchHistoryTitle", language)}</Text>
+              <Text className="text-sm text-muted mt-1">{t("matchHistoryDesc", language)}</Text>
             </View>
             <TouchableOpacity
               onPress={() => router.back()}
@@ -120,9 +160,9 @@ export default function MatchHistoryScreen() {
           ) : (
             <View className="flex-1 items-center justify-center gap-3 py-12">
               <Text className="text-4xl">📜</Text>
-              <Text className="text-foreground font-semibold">No matches yet</Text>
+              <Text className="text-foreground font-semibold">{language === "en" ? "No matches yet" : "Κανένας αγώνας ακόμα"}</Text>
               <Text className="text-muted text-sm text-center">
-                Your match history will appear here
+                {language === "en" ? "Your match history will appear here" : "Το ιστορικό αγώνων σας θα εμφανιστεί εδώ"}
               </Text>
             </View>
           )}
