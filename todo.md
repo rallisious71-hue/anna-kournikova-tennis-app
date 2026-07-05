@@ -100,3 +100,12 @@
 - [x] Implement delete match API call for undo
 - [x] Show success message after undo
 - [x] Auto-hide undo button after 30 seconds or navigation
+
+## New Feature - Update 9
+
+- [x] Add date filter to match history
+- [x] Add player/opponent filter to match history
+- [x] Create filter UI with dropdown/picker
+- [x] Implement filter logic for matches
+- [x] Show filtered results count
+- [x] Add clear filters button
