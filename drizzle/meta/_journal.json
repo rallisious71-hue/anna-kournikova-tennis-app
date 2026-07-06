@@ -22,6 +22,13 @@
       "when": 1783151391450,
       "tag": "0002_early_kingpin",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1783323546043,
+      "tag": "0003_illegal_thunderbolt",
+      "breakpoints": true
     }
   ]
 }

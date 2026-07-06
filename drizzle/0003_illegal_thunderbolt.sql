@@ -1,0 +1,1 @@
+ALTER TABLE `matches` ADD `durationSeconds` int DEFAULT 0 NOT NULL;

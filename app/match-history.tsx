@@ -21,6 +21,7 @@ interface MatchRecord {
   winner: 1 | 2;
   date: string;
   matchDate: Date;
+  durationSeconds: number;
 }
 
 export default function MatchHistoryScreen() {
@@ -49,6 +50,7 @@ export default function MatchHistoryScreen() {
         winner: (m.winner || 0) as 1 | 2,
         date: new Date(m.matchDate).toLocaleDateString(),
         matchDate: new Date(m.matchDate),
+        durationSeconds: m.durationSeconds || 0,
       }));
       setMatches(formatted);
     }
@@ -124,11 +126,22 @@ export default function MatchHistoryScreen() {
     });
   };
 
+  const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m ${secs}s`;
+  };
+
   const MatchCard = ({ match }: { match: MatchRecord }) => (
     <View className="bg-surface rounded-lg p-4 mb-3 border border-border">
       <View className="flex-row justify-between items-start mb-2">
         <View className="flex-1">
           <Text className="text-xs text-muted mb-1">{match.date}</Text>
+          <Text className="text-xs text-muted mb-2">Duration: {formatDuration(match.durationSeconds)}</Text>
           <Text className="text-sm font-bold text-foreground">{match.team1}</Text>
           <Text className="text-sm font-bold text-foreground">{match.team2}</Text>
         </View>

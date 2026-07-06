@@ -17,7 +17,24 @@ export default function LiveMatchScreen() {
   const [showUndo, setShowUndo] = useState(false);
   const [isUndoing, setIsUndoing] = useState(false);
 
+  // Timer state
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
   const { saveMatchAsync, deleteMatchAsync } = useTennisApi();
+
+  // Timer effect
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        setElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning]);
 
   // Auto-hide undo button after 30 seconds
   useEffect(() => {
@@ -29,6 +46,14 @@ export default function LiveMatchScreen() {
     }
   }, [showUndo]);
 
+  // Format seconds to HH:MM:SS
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
   const handleEndMatch = async () => {
     let winner = 0;
     if (team1Sets > team2Sets) winner = 1;
@@ -39,6 +64,7 @@ export default function LiveMatchScreen() {
     }
 
     setIsSaving(true);
+    setIsTimerRunning(false);
     try {
       const matchData = {
         team1Player1: params.team1Player1 as string,
@@ -50,6 +76,7 @@ export default function LiveMatchScreen() {
         team1Games,
         team2Games,
         winner,
+        durationSeconds: elapsedSeconds,
       };
 
       console.log("[Match Save] Starting match save with data:", matchData);
@@ -128,6 +155,33 @@ export default function LiveMatchScreen() {
             <Text className="text-xs text-foreground text-center">
               {params.team1Player1} & {params.team1Player2} vs {params.team2Player1} & {params.team2Player2}
             </Text>
+          </View>
+
+          {/* Timer Display */}
+          <View className="bg-primary rounded-2xl p-6 items-center gap-3">
+            <Text className="text-sm font-bold text-white">Match Duration</Text>
+            <Text className="text-5xl font-bold text-white font-mono">{formatTime(elapsedSeconds)}</Text>
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                onPress={() => setIsTimerRunning(!isTimerRunning)}
+                className={`flex-1 rounded-lg py-2 active:opacity-80 ${
+                  isTimerRunning ? "bg-error" : "bg-success"
+                }`}
+              >
+                <Text className="text-white font-bold text-center text-sm">
+                  {isTimerRunning ? "Pause" : "Start"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setElapsedSeconds(0);
+                  setIsTimerRunning(false);
+                }}
+                className="flex-1 bg-white bg-opacity-20 rounded-lg py-2 active:opacity-60"
+              >
+                <Text className="text-white font-bold text-center text-sm">Reset</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Team 1 Score Card */}

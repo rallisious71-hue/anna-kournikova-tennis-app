@@ -109,3 +109,12 @@
 - [x] Implement filter logic for matches
 - [x] Show filtered results count
 - [x] Add clear filters button
+
+## New Feature - Update 10
+
+- [x] Add duration tracking to matches
+- [x] Add start/stop timer to live match screen
+- [x] Store match duration in database
+- [x] Display duration in match history
+- [x] Show duration in match statistics
+- [x] Format duration as HH:MM:SS

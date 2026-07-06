@@ -48,6 +48,8 @@ export const matches = mysqlTable("matches", {
   team2Games: int("team2Games").notNull().default(0),
   /** Winner: 1 for Team 1, 2 for Team 2 */
   winner: int("winner"),
+  /** Match duration in seconds */
+  durationSeconds: int("durationSeconds").notNull().default(0),
   /** Match date */
   matchDate: timestamp("matchDate").defaultNow().notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
