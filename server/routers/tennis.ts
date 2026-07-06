@@ -20,6 +20,7 @@ export const tennisRouter = router({
         team1Games: z.number(),
         team2Games: z.number(),
         winner: z.number().int(),
+        durationSeconds: z.number().int().min(0).default(0),
       })
     )
     .mutation(async ({ input }) => {
@@ -37,6 +38,7 @@ export const tennisRouter = router({
         team1Games: input.team1Games,
         team2Games: input.team2Games,
         winner: input.winner,
+        durationSeconds: input.durationSeconds,
       });
 
       // Update player statistics
@@ -83,6 +85,7 @@ export const tennisRouter = router({
         team2Sets: z.number(),
         team1Games: z.number(),
         team2Games: z.number(),
+        durationSeconds: z.number().int().min(0).optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -107,6 +110,7 @@ export const tennisRouter = router({
           team1Games: input.team1Games,
           team2Games: input.team2Games,
           winner,
+          ...(input.durationSeconds !== undefined ? { durationSeconds: input.durationSeconds } : {}),
         })
         .where(eq(matches.id, input.matchId));
 
