@@ -1,14 +1,16 @@
-import { ScrollView, Text, View, TouchableOpacity, Image } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useLanguage } from "@/lib/language-context";
+import { useThemeContext } from "@/lib/theme-provider";
 import { t } from "@/lib/i18n/translations";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { language, setLanguage } = useLanguage();
+  const { colorScheme } = useThemeContext();
   const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -19,8 +21,10 @@ export default function HomeScreen() {
     loadUserName();
   }, []);
 
+  const isDark = colorScheme === "dark";
+
   return (
-    <ScreenContainer className="p-0">
+    <ScreenContainer className={`p-0 ${isDark ? "bg-gray-900" : "bg-white"}`}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="flex-1">
           {/* Retro PS1 Background Header */}
@@ -35,13 +39,7 @@ export default function HomeScreen() {
                     : "bg-cyan-300 border-cyan-400"
                 }`}
               >
-                <Text
-                  className={`font-bold text-sm ${
-                    language === "en" ? "text-black" : "text-black"
-                  }`}
-                >
-                  EN
-                </Text>
+                <Text className="font-bold text-sm text-black">EN</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setLanguage("el")}
@@ -51,13 +49,7 @@ export default function HomeScreen() {
                     : "bg-magenta-300 border-magenta-400"
                 }`}
               >
-                <Text
-                  className={`font-bold text-sm ${
-                    language === "el" ? "text-black" : "text-black"
-                  }`}
-                >
-                  EL
-                </Text>
+                <Text className="font-bold text-sm text-black">EL</Text>
               </TouchableOpacity>
             </View>
 
@@ -78,8 +70,8 @@ export default function HomeScreen() {
 
             {/* Welcome Message */}
             {userName && (
-              <View className="bg-black bg-opacity-30 rounded-lg p-3 border-2 border-yellow-300">
-                <Text className="text-yellow-300 font-bold text-center">
+              <View className="bg-white rounded-lg p-3 border-2 border-yellow-300">
+                <Text className="text-black font-bold text-center">
                   {language === "en" ? "Welcome" : "Καλώς ήρθατε"}, {userName}!
                 </Text>
               </View>
@@ -87,7 +79,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Main Content */}
-          <View className="flex-1 px-6 py-8 gap-4 bg-gray-900">
+          <View className={`flex-1 px-6 py-8 gap-4 ${isDark ? "bg-gray-900" : "bg-white"}`}>
             {/* Start New Match - Retro Button */}
             <TouchableOpacity
               onPress={() => router.push("/new-match")}
@@ -109,7 +101,9 @@ export default function HomeScreen() {
             {/* Statistics - Retro Button */}
             <TouchableOpacity
               onPress={() => router.push("/statistics")}
-              className="bg-gradient-to-r from-magenta-400 to-magenta-500 rounded-lg p-6 border-4 border-magenta-600 active:scale-95"
+              className={`bg-gradient-to-r from-magenta-400 to-magenta-500 rounded-lg p-6 border-4 border-magenta-600 active:scale-95 ${
+                isDark ? "bg-gradient-to-r from-magenta-600 to-magenta-700" : ""
+              }`}
             >
               <View className="items-center gap-2">
                 <Text className="text-3xl">📊</Text>
@@ -143,8 +137,14 @@ export default function HomeScreen() {
             </TouchableOpacity>
 
             {/* Quick Stats - Retro Box */}
-            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-cyan-400 gap-4 mt-4">
-              <Text className="text-cyan-300 font-black text-lg">
+            <View
+              className={`rounded-lg p-6 border-4 gap-4 mt-4 ${
+                isDark
+                  ? "bg-gray-800 border-cyan-400"
+                  : "bg-white border-cyan-400"
+              }`}
+            >
+              <Text className={`font-black text-lg ${isDark ? "text-cyan-300" : "text-cyan-600"}`}>
                 {language === "en" ? "QUICK STATS" : "ΓΡΗΓΟΡΑ ΣΤΑΤΙΣΤΙΚΑ"}
               </Text>
               <View className="flex-row gap-3">
@@ -172,9 +172,13 @@ export default function HomeScreen() {
             {/* Settings Link - Retro Style */}
             <TouchableOpacity
               onPress={() => router.push("/settings")}
-              className="bg-gray-700 rounded-lg p-4 border-2 border-gray-600 active:opacity-80 mt-4"
+              className={`rounded-lg p-4 border-2 active:opacity-80 mt-4 ${
+                isDark
+                  ? "bg-gray-800 border-gray-600"
+                  : "bg-gray-100 border-gray-300"
+              }`}
             >
-              <Text className="text-gray-300 font-bold text-center">
+              <Text className={`font-bold text-center ${isDark ? "text-cyan-300" : "text-gray-700"}`}>
                 {language === "en" ? "⚙️ Settings" : "⚙️ Ρυθμίσεις"}
               </Text>
             </TouchableOpacity>

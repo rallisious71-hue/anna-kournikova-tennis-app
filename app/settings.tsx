@@ -11,6 +11,8 @@ export default function SettingsScreen() {
   const { language, setLanguage } = useLanguage();
   const { colorScheme, setColorScheme } = useThemeContext();
 
+  const isDark = colorScheme === "dark";
+
   const handleDarkModeToggle = (value: boolean) => {
     setColorScheme(value ? "dark" : "light");
   };
@@ -59,7 +61,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScreenContainer className="p-0">
+    <ScreenContainer className={`p-0 ${isDark ? "bg-gray-900" : "bg-white"}`}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="flex-1">
           {/* Retro Header */}
@@ -81,10 +83,16 @@ export default function SettingsScreen() {
           </View>
 
           {/* Main Content */}
-          <View className="flex-1 px-6 py-8 gap-6 bg-gray-900">
+          <View className={`flex-1 px-6 py-8 gap-6 ${isDark ? "bg-gray-900" : "bg-white"}`}>
             {/* Language Section - Retro Box */}
-            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-cyan-400 gap-4">
-              <Text className="text-cyan-300 font-black text-lg">
+            <View
+              className={`rounded-lg p-6 border-4 gap-4 ${
+                isDark
+                  ? "bg-gray-800 border-cyan-400"
+                  : "bg-white border-cyan-400"
+              }`}
+            >
+              <Text className={`font-black text-lg ${isDark ? "text-cyan-300" : "text-cyan-600"}`}>
                 {language === "en" ? "LANGUAGE" : "ΓΛΩΣΣΑ"}
               </Text>
               <View className="flex-row gap-3">
@@ -93,12 +101,18 @@ export default function SettingsScreen() {
                   className={`flex-1 py-4 rounded-lg border-2 font-bold ${
                     language === "en"
                       ? "bg-cyan-400 border-cyan-500"
-                      : "bg-gray-700 border-gray-600"
+                      : isDark
+                      ? "bg-gray-700 border-gray-600"
+                      : "bg-gray-100 border-gray-300"
                   }`}
                 >
                   <Text
                     className={`font-black text-center ${
-                      language === "en" ? "text-black" : "text-gray-300"
+                      language === "en"
+                        ? "text-black"
+                        : isDark
+                        ? "text-gray-300"
+                        : "text-gray-700"
                     }`}
                   >
                     ENGLISH
@@ -109,12 +123,18 @@ export default function SettingsScreen() {
                   className={`flex-1 py-4 rounded-lg border-2 font-bold ${
                     language === "el"
                       ? "bg-magenta-400 border-magenta-500"
-                      : "bg-gray-700 border-gray-600"
+                      : isDark
+                      ? "bg-gray-700 border-gray-600"
+                      : "bg-gray-100 border-gray-300"
                   }`}
                 >
                   <Text
                     className={`font-black text-center ${
-                      language === "el" ? "text-black" : "text-gray-300"
+                      language === "el"
+                        ? "text-black"
+                        : isDark
+                        ? "text-gray-300"
+                        : "text-gray-700"
                     }`}
                   >
                     ΕΛΛΗΝΙΚΑ
@@ -124,9 +144,15 @@ export default function SettingsScreen() {
             </View>
 
             {/* Dark Mode Section - Retro Box */}
-            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-magenta-400 gap-4">
+            <View
+              className={`rounded-lg p-6 border-4 gap-4 ${
+                isDark
+                  ? "bg-gray-800 border-magenta-400"
+                  : "bg-white border-magenta-400"
+              }`}
+            >
               <View className="flex-row items-center justify-between">
-                <Text className="text-magenta-300 font-black text-lg">
+                <Text className={`font-black text-lg ${isDark ? "text-magenta-300" : "text-magenta-600"}`}>
                   {language === "en" ? "DARK MODE" : "ΣΚΟΤΕΙΝΗ ΛΕΙΤΟΥΡΓΙΑ"}
                 </Text>
                 <Switch
@@ -136,7 +162,7 @@ export default function SettingsScreen() {
                   thumbColor={colorScheme === "dark" ? "#FF006E" : "#FFD700"}
                 />
               </View>
-              <Text className="text-gray-300 text-xs">
+              <Text className={`text-xs ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                 {language === "en"
                   ? "Toggle between light and dark themes"
                   : "Εναλλαγή μεταξύ ανοιχτών και σκοτεινών θεμάτων"}
@@ -144,15 +170,21 @@ export default function SettingsScreen() {
             </View>
 
             {/* Account Section - Retro Box */}
-            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-yellow-400 gap-4">
-              <Text className="text-yellow-300 font-black text-lg">
+            <View
+              className={`rounded-lg p-6 border-4 gap-4 ${
+                isDark
+                  ? "bg-gray-800 border-yellow-400"
+                  : "bg-white border-yellow-400"
+              }`}
+            >
+              <Text className={`font-black text-lg ${isDark ? "text-yellow-300" : "text-yellow-600"}`}>
                 {language === "en" ? "ACCOUNT" : "ΛΟΓΑΡΙΑΣΜΟΣ"}
               </Text>
 
               {/* Logout Button */}
               <TouchableOpacity
                 onPress={handleLogout}
-                className="bg-error rounded-lg py-4 border-2 border-red-600 active:scale-95"
+                className="bg-red-600 rounded-lg py-4 border-2 border-red-700 active:scale-95"
               >
                 <Text className="text-white font-black text-center">
                   {language === "en" ? "LOGOUT" : "ΑΠΟΣΥΝΔΕΣΗ"}
@@ -161,21 +193,27 @@ export default function SettingsScreen() {
             </View>
 
             {/* Data Section - Retro Box */}
-            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-green-400 gap-4">
-              <Text className="text-green-300 font-black text-lg">
+            <View
+              className={`rounded-lg p-6 border-4 gap-4 ${
+                isDark
+                  ? "bg-gray-800 border-green-400"
+                  : "bg-white border-green-400"
+              }`}
+            >
+              <Text className={`font-black text-lg ${isDark ? "text-green-300" : "text-green-600"}`}>
                 {language === "en" ? "DATA" : "ΔΕΔΟΜΕΝΑ"}
               </Text>
 
               {/* Reset Data Button */}
               <TouchableOpacity
                 onPress={handleResetData}
-                className="bg-error rounded-lg py-4 border-2 border-red-600 active:scale-95"
+                className="bg-red-600 rounded-lg py-4 border-2 border-red-700 active:scale-95"
               >
                 <Text className="text-white font-black text-center">
                   {language === "en" ? "RESET ALL DATA" : "ΕΠΑΝΑΦΟΡΑ ΟΛΩΝ"}
                 </Text>
               </TouchableOpacity>
-              <Text className="text-gray-400 text-xs">
+              <Text className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                 {language === "en"
                   ? "Permanently delete all matches and statistics"
                   : "Διαγράψτε μόνιμα όλους τους αγώνες και τα στατιστικά"}
@@ -183,14 +221,20 @@ export default function SettingsScreen() {
             </View>
 
             {/* About Section - Retro Box */}
-            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-cyan-400 gap-2">
-              <Text className="text-cyan-300 font-black text-lg">
+            <View
+              className={`rounded-lg p-6 border-4 gap-2 ${
+                isDark
+                  ? "bg-gray-800 border-cyan-400"
+                  : "bg-white border-cyan-400"
+              }`}
+            >
+              <Text className={`font-black text-lg ${isDark ? "text-cyan-300" : "text-cyan-600"}`}>
                 {language === "en" ? "ABOUT" : "ΣΧΕΤΙΚΑ"}
               </Text>
-              <Text className="text-gray-300 text-xs">
+              <Text className={`text-xs ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                 Anna Kournikova Smash Court Tennis
               </Text>
-              <Text className="text-gray-400 text-xs">
+              <Text className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                 {language === "en" ? "Version 1.0.0" : "Έκδοση 1.0.0"}
               </Text>
             </View>
