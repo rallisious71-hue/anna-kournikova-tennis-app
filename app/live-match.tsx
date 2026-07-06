@@ -3,6 +3,8 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTennisApi } from "@/hooks/use-tennis-api";
+import { ScoreInput } from "@/components/score-input";
+import { DurationInput } from "@/components/duration-input";
 
 export default function LiveMatchScreen() {
   const router = useRouter();
@@ -20,6 +22,7 @@ export default function LiveMatchScreen() {
   // Timer state
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isEditingDuration, setIsEditingDuration] = useState(false);
 
   const { saveMatchAsync, deleteMatchAsync } = useTennisApi();
 
@@ -160,28 +163,52 @@ export default function LiveMatchScreen() {
           {/* Timer Display */}
           <View className="bg-primary rounded-2xl p-6 items-center gap-3">
             <Text className="text-sm font-bold text-white">Match Duration</Text>
-            <Text className="text-5xl font-bold text-white font-mono">{formatTime(elapsedSeconds)}</Text>
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                onPress={() => setIsTimerRunning(!isTimerRunning)}
-                className={`flex-1 rounded-lg py-2 active:opacity-80 ${
-                  isTimerRunning ? "bg-error" : "bg-success"
-                }`}
-              >
-                <Text className="text-white font-bold text-center text-sm">
-                  {isTimerRunning ? "Pause" : "Start"}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setElapsedSeconds(0);
-                  setIsTimerRunning(false);
-                }}
-                className="flex-1 bg-white bg-opacity-20 rounded-lg py-2 active:opacity-60"
-              >
-                <Text className="text-white font-bold text-center text-sm">Reset</Text>
-              </TouchableOpacity>
-            </View>
+
+            {isEditingDuration ? (
+              <View className="w-full gap-3">
+                <DurationInput totalSeconds={elapsedSeconds} onChange={setElapsedSeconds} />
+                <TouchableOpacity
+                  onPress={() => setIsEditingDuration(false)}
+                  className="bg-white rounded-lg py-2 active:opacity-80"
+                >
+                  <Text className="text-primary font-bold text-center text-sm">✓ Έτοιμο (Done)</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <>
+                <Text className="text-5xl font-bold text-white font-mono">{formatTime(elapsedSeconds)}</Text>
+                <View className="flex-row gap-3">
+                  <TouchableOpacity
+                    onPress={() => setIsTimerRunning(!isTimerRunning)}
+                    className={`flex-1 rounded-lg py-2 active:opacity-80 ${
+                      isTimerRunning ? "bg-error" : "bg-success"
+                    }`}
+                  >
+                    <Text className="text-white font-bold text-center text-sm">
+                      {isTimerRunning ? "Pause" : "Start"}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsTimerRunning(false);
+                      setIsEditingDuration(true);
+                    }}
+                    className="flex-1 bg-black/25 border border-white/40 rounded-lg py-2 active:opacity-60"
+                  >
+                    <Text className="text-white font-bold text-center text-sm">✏️ Πληκτρολόγηση</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setElapsedSeconds(0);
+                      setIsTimerRunning(false);
+                    }}
+                    className="flex-1 bg-black/25 border border-white/40 rounded-lg py-2 active:opacity-60"
+                  >
+                    <Text className="text-white font-bold text-center text-sm">Reset</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
 
           {/* Team 1 Score Card */}
@@ -193,23 +220,17 @@ export default function LiveMatchScreen() {
               </Text>
             </View>
 
-            {/* Sets and Games Display */}
+            {/* Sets and Games Display - tap the number to type it directly */}
             <View className="flex-row gap-4">
-              <View className="flex-1 bg-white rounded-lg p-4 items-center">
-                <Text className="text-5xl font-bold text-primary">{team1Sets}</Text>
-                <Text className="text-sm font-bold text-primary mt-1">Sets</Text>
-              </View>
-              <View className="flex-1 bg-white rounded-lg p-4 items-center">
-                <Text className="text-5xl font-bold text-primary">{team1Games}</Text>
-                <Text className="text-sm font-bold text-primary mt-1">Games</Text>
-              </View>
+              <ScoreInput value={team1Sets} onChange={setTeam1Sets} label="Sets" colorClassName="text-primary" />
+              <ScoreInput value={team1Games} onChange={setTeam1Games} label="Games" colorClassName="text-primary" />
             </View>
 
             {/* Score Buttons */}
             <View className="flex-row gap-2">
               <TouchableOpacity
                 onPress={() => setTeam1Games(Math.max(0, team1Games - 1))}
-                className="flex-1 bg-white bg-opacity-20 rounded-lg py-3 active:opacity-60"
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
               >
                 <Text className="text-white font-bold text-center">-1 Game</Text>
               </TouchableOpacity>
@@ -227,7 +248,7 @@ export default function LiveMatchScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam1Sets(Math.max(0, team1Sets - 1))}
-                className="flex-1 bg-white bg-opacity-20 rounded-lg py-3 active:opacity-60"
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
               >
                 <Text className="text-white font-bold text-center">-1 Set</Text>
               </TouchableOpacity>
@@ -243,23 +264,17 @@ export default function LiveMatchScreen() {
               </Text>
             </View>
 
-            {/* Sets and Games Display */}
+            {/* Sets and Games Display - tap the number to type it directly */}
             <View className="flex-row gap-4">
-              <View className="flex-1 bg-white rounded-lg p-4 items-center">
-                <Text className="text-5xl font-bold text-error">{team2Sets}</Text>
-                <Text className="text-sm font-bold text-error mt-1">Sets</Text>
-              </View>
-              <View className="flex-1 bg-white rounded-lg p-4 items-center">
-                <Text className="text-5xl font-bold text-error">{team2Games}</Text>
-                <Text className="text-sm font-bold text-error mt-1">Games</Text>
-              </View>
+              <ScoreInput value={team2Sets} onChange={setTeam2Sets} label="Sets" colorClassName="text-error" />
+              <ScoreInput value={team2Games} onChange={setTeam2Games} label="Games" colorClassName="text-error" />
             </View>
 
             {/* Score Buttons */}
             <View className="flex-row gap-2">
               <TouchableOpacity
                 onPress={() => setTeam2Games(Math.max(0, team2Games - 1))}
-                className="flex-1 bg-white bg-opacity-20 rounded-lg py-3 active:opacity-60"
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
               >
                 <Text className="text-white font-bold text-center">-1 Game</Text>
               </TouchableOpacity>
@@ -277,7 +292,7 @@ export default function LiveMatchScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setTeam2Sets(Math.max(0, team2Sets - 1))}
-                className="flex-1 bg-white bg-opacity-20 rounded-lg py-3 active:opacity-60"
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
               >
                 <Text className="text-white font-bold text-center">-1 Set</Text>
               </TouchableOpacity>
