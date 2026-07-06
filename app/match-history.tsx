@@ -122,6 +122,7 @@ export default function MatchHistoryScreen() {
         team2Sets: match.team2Sets,
         team1Games: match.team1Games,
         team2Games: match.team2Games,
+        durationSeconds: match.durationSeconds,
       },
     });
   };
