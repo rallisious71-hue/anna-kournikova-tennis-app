@@ -118,3 +118,12 @@
 - [x] Display duration in match history
 - [x] Show duration in match statistics
 - [x] Format duration as HH:MM:SS
+
+## New Feature - Update 11 - Retro PS1 Aesthetic
+
+- [x] Generate tennis-themed PS1 retro images
+- [x] Update theme colors to neon cyan, magenta, yellow
+- [x] Redesign home screen with retro buttons
+- [x] Redesign settings screen with retro boxes
+- [x] Add dark background for PS1 feel
+- [x] Update all UI elements with retro styling

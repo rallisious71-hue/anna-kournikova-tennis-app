@@ -16,34 +16,41 @@ export default function SettingsScreen() {
   };
 
   const handleLogout = async () => {
-    Alert.alert(t("logout", language), language === "en" ? "Are you sure?" : "Είστε σίγουροι;", [
-      { text: t("cancel", language), onPress: () => {} },
-      {
-        text: t("logout", language),
-        onPress: async () => {
-          await AsyncStorage.removeItem("user_id");
-          await AsyncStorage.removeItem("user_name");
-          await AsyncStorage.removeItem("username");
-          router.replace("../login");
+    Alert.alert(
+      language === "en" ? "Logout" : "Αποσύνδεση",
+      language === "en" ? "Are you sure?" : "Είστε σίγουροι;",
+      [
+        { text: language === "en" ? "Cancel" : "Ακύρωση", onPress: () => {} },
+        {
+          text: language === "en" ? "Logout" : "Αποσύνδεση",
+          onPress: async () => {
+            await AsyncStorage.removeItem("user_id");
+            await AsyncStorage.removeItem("user_name");
+            await AsyncStorage.removeItem("username");
+            router.replace("../login");
+          },
+          style: "destructive",
         },
-        style: "destructive",
-      },
-    ]);
+      ]
+    );
   };
 
   const handleResetData = () => {
     Alert.alert(
-      t("resetAllData", language),
+      language === "en" ? "Reset All Data" : "Επαναφορά Όλων των Δεδομένων",
       language === "en"
         ? "This will permanently delete all matches and statistics. This action cannot be undone."
         : "Αυτό θα διαγράψει μόνιμα όλους τους αγώνες και τα στατιστικά. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
       [
-        { text: t("cancel", language), onPress: () => {} },
+        { text: language === "en" ? "Cancel" : "Ακύρωση", onPress: () => {} },
         {
-          text: t("delete", language),
+          text: language === "en" ? "Delete" : "Διαγραφή",
           onPress: async () => {
             // TODO: Clear all data from database
-            Alert.alert(t("success", language), language === "en" ? "All data has been reset" : "Όλα τα δεδομένα έχουν επαναφερθεί");
+            Alert.alert(
+              language === "en" ? "Success" : "Επιτυχία",
+              language === "en" ? "All data has been reset" : "Όλα τα δεδομένα έχουν επαναφερθεί"
+            );
           },
           style: "destructive",
         },
@@ -52,115 +59,141 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScreenContainer className="p-6">
+    <ScreenContainer className="p-0">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-        <View className="flex-1 gap-6">
-          {/* Header */}
-          <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-3xl font-bold text-foreground">{t("settingsTitle", language)}</Text>
-              <Text className="text-sm text-muted mt-1">App preferences</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="w-10 h-10 rounded-full bg-surface border border-border items-center justify-center"
-            >
-              <Text className="text-foreground text-lg">×</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Language Section */}
-          <View className="gap-4">
-            <Text className="text-lg font-semibold text-foreground">{t("language", language)}</Text>
-            <View className="flex-row gap-2">
+        <View className="flex-1">
+          {/* Retro Header */}
+          <View className="bg-gradient-to-r from-magenta-500 to-cyan-400 px-6 py-8 gap-4">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-3xl font-black text-black">
+                {language === "en" ? "SETTINGS" : "ΡΥΘΜΙΣΕΙΣ"}
+              </Text>
               <TouchableOpacity
-                onPress={() => setLanguage("en")}
-                className={`flex-1 py-3 rounded ${language === "en" ? "bg-primary" : "bg-surface border border-border"}`}
+                onPress={() => router.back()}
+                className="w-12 h-12 rounded-lg bg-yellow-300 border-2 border-yellow-400 items-center justify-center active:scale-95"
               >
-                <Text className={`font-semibold text-center ${language === "en" ? "text-white" : "text-foreground"}`}>
-                  English
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setLanguage("el")}
-                className={`flex-1 py-3 rounded ${language === "el" ? "bg-primary" : "bg-surface border border-border"}`}
-              >
-                <Text className={`font-semibold text-center ${language === "el" ? "text-white" : "text-foreground"}`}>
-                  Ελληνικά
-                </Text>
+                <Text className="text-black text-2xl font-black">×</Text>
               </TouchableOpacity>
             </View>
+            <Text className="text-black font-bold text-sm">
+              {language === "en" ? "Customize your experience" : "Προσαρμόστε την εμπειρία σας"}
+            </Text>
           </View>
 
-          {/* Theme Section */}
-          <View className="gap-4">
-            <Text className="text-lg font-semibold text-foreground">{t("appearance", language)}</Text>
-            <View className="bg-surface rounded-lg p-4 border border-border flex-row items-center justify-between">
-              <View className="gap-1">
-                <Text className="text-foreground font-medium">{t("darkMode", language)}</Text>
-                <Text className="text-xs text-muted">{t("toggleDarkLight", language)}</Text>
+          {/* Main Content */}
+          <View className="flex-1 px-6 py-8 gap-6 bg-gray-900">
+            {/* Language Section - Retro Box */}
+            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-cyan-400 gap-4">
+              <Text className="text-cyan-300 font-black text-lg">
+                {language === "en" ? "LANGUAGE" : "ΓΛΩΣΣΑ"}
+              </Text>
+              <View className="flex-row gap-3">
+                <TouchableOpacity
+                  onPress={() => setLanguage("en")}
+                  className={`flex-1 py-4 rounded-lg border-2 font-bold ${
+                    language === "en"
+                      ? "bg-cyan-400 border-cyan-500"
+                      : "bg-gray-700 border-gray-600"
+                  }`}
+                >
+                  <Text
+                    className={`font-black text-center ${
+                      language === "en" ? "text-black" : "text-gray-300"
+                    }`}
+                  >
+                    ENGLISH
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setLanguage("el")}
+                  className={`flex-1 py-4 rounded-lg border-2 font-bold ${
+                    language === "el"
+                      ? "bg-magenta-400 border-magenta-500"
+                      : "bg-gray-700 border-gray-600"
+                  }`}
+                >
+                  <Text
+                    className={`font-black text-center ${
+                      language === "el" ? "text-black" : "text-gray-300"
+                    }`}
+                  >
+                    ΕΛΛΗΝΙΚΑ
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <Switch
-                value={colorScheme === "dark"}
-                onValueChange={handleDarkModeToggle}
-              />
             </View>
-          </View>
 
-          {/* Data Section */}
-          <View className="gap-4">
-            <Text className="text-lg font-semibold text-foreground">{t("data", language)}</Text>
-
-            <TouchableOpacity className="bg-surface rounded-lg p-4 border border-border active:opacity-80">
-              <View className="gap-1">
-                <Text className="text-foreground font-medium">{t("exportData", language)}</Text>
-                <Text className="text-xs text-muted">{t("downloadMatchHistory", language)}</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleResetData}
-              className="bg-error bg-opacity-10 rounded-lg p-4 border border-error border-opacity-30 active:opacity-80"
-            >
-              <View className="gap-1">
-                <Text className="text-error font-medium">{t("resetAllData", language)}</Text>
-                <Text className="text-xs text-error opacity-75">{t("deleteAllMatches", language)}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* About Section */}
-          <View className="gap-4">
-            <Text className="text-lg font-semibold text-foreground">{t("about", language)}</Text>
-
-            <View className="bg-surface rounded-lg p-4 border border-border gap-3">
-              <View className="flex-row justify-between items-center">
-                <Text className="text-muted">{t("version", language)}</Text>
-                <Text className="text-foreground font-semibold">1.0.0</Text>
-              </View>
-
-              <View className="h-px bg-border" />
-
-              <View className="gap-1">
-                <Text className="text-foreground font-medium">Anna Kournikova Smash Court Tennis</Text>
-                <Text className="text-xs text-muted mt-2">
-                  {t("appDescription", language)}
+            {/* Dark Mode Section - Retro Box */}
+            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-magenta-400 gap-4">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-magenta-300 font-black text-lg">
+                  {language === "en" ? "DARK MODE" : "ΣΚΟΤΕΙΝΗ ΛΕΙΤΟΥΡΓΙΑ"}
                 </Text>
+                <Switch
+                  value={colorScheme === "dark"}
+                  onValueChange={handleDarkModeToggle}
+                  trackColor={{ false: "#FFD700", true: "#00D9FF" }}
+                  thumbColor={colorScheme === "dark" ? "#FF006E" : "#FFD700"}
+                />
               </View>
+              <Text className="text-gray-300 text-xs">
+                {language === "en"
+                  ? "Toggle between light and dark themes"
+                  : "Εναλλαγή μεταξύ ανοιχτών και σκοτεινών θεμάτων"}
+              </Text>
             </View>
-          </View>
 
-          {/* Logout Button */}
-          <TouchableOpacity
-            onPress={handleLogout}
-            className="bg-error rounded-lg py-4 active:opacity-80"
-          >
-            <Text className="text-white font-semibold text-center">{t("logout", language)}</Text>
-          </TouchableOpacity>
+            {/* Account Section - Retro Box */}
+            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-yellow-400 gap-4">
+              <Text className="text-yellow-300 font-black text-lg">
+                {language === "en" ? "ACCOUNT" : "ΛΟΓΑΡΙΑΣΜΟΣ"}
+              </Text>
 
-          {/* Footer */}
-          <View className="items-center gap-2 py-6">
-            <Text className="text-xs text-muted">Made with 🎾 for tennis lovers</Text>
+              {/* Logout Button */}
+              <TouchableOpacity
+                onPress={handleLogout}
+                className="bg-error rounded-lg py-4 border-2 border-red-600 active:scale-95"
+              >
+                <Text className="text-white font-black text-center">
+                  {language === "en" ? "LOGOUT" : "ΑΠΟΣΥΝΔΕΣΗ"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Data Section - Retro Box */}
+            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-green-400 gap-4">
+              <Text className="text-green-300 font-black text-lg">
+                {language === "en" ? "DATA" : "ΔΕΔΟΜΕΝΑ"}
+              </Text>
+
+              {/* Reset Data Button */}
+              <TouchableOpacity
+                onPress={handleResetData}
+                className="bg-error rounded-lg py-4 border-2 border-red-600 active:scale-95"
+              >
+                <Text className="text-white font-black text-center">
+                  {language === "en" ? "RESET ALL DATA" : "ΕΠΑΝΑΦΟΡΑ ΟΛΩΝ"}
+                </Text>
+              </TouchableOpacity>
+              <Text className="text-gray-400 text-xs">
+                {language === "en"
+                  ? "Permanently delete all matches and statistics"
+                  : "Διαγράψτε μόνιμα όλους τους αγώνες και τα στατιστικά"}
+              </Text>
+            </View>
+
+            {/* About Section - Retro Box */}
+            <View className="bg-black bg-opacity-50 rounded-lg p-6 border-4 border-cyan-400 gap-2">
+              <Text className="text-cyan-300 font-black text-lg">
+                {language === "en" ? "ABOUT" : "ΣΧΕΤΙΚΑ"}
+              </Text>
+              <Text className="text-gray-300 text-xs">
+                Anna Kournikova Smash Court Tennis
+              </Text>
+              <Text className="text-gray-400 text-xs">
+                {language === "en" ? "Version 1.0.0" : "Έκδοση 1.0.0"}
+              </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
