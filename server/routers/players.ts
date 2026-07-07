@@ -36,17 +36,21 @@ export const playersRouter = router({
       // Hash password
       const passwordHash = hashPassword(input.password);
 
+      // Determine role: admin for SHERUDO ΣΤΕΦΑΝΟΣ, user for others
+      const role = input.username === "SHERUDO" || input.fullName === "SHERUDO ΣΤΕΦΑΝΟΣ" ? "admin" : "user";
+
       // Create player
       await db.insert(players).values({
         name: input.fullName,
         username: input.username,
         passwordHash,
+        role,
       });
 
       // Get the created player
       const created = await db.select().from(players).where(eq(players.username, input.username)).limit(1);
       
-      return { success: true, id: created[0]?.id || 0 };
+      return { success: true, id: created[0]?.id || 0, role: created[0]?.role || "user" };
     }),
 
   /**
@@ -78,6 +82,7 @@ export const playersRouter = router({
         id: player[0].id,
         name: player[0].name,
         username: player[0].username,
+        role: player[0].role,
       };
     }),
 

@@ -6,6 +6,7 @@ import { HomeButton } from "@/components/home-button";
 import { useTennisApi } from "@/hooks/use-tennis-api";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/i18n/translations";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface MatchRecord {
   id: number;
@@ -33,6 +34,18 @@ export default function MatchHistoryScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [userRole, setUserRole] = useState<"admin" | "user">("user");
+
+  // Load user role from storage
+  useEffect(() => {
+    const loadUserRole = async () => {
+      const role = await AsyncStorage.getItem("user_role");
+      if (role === "admin" || role === "user") {
+        setUserRole(role);
+      }
+    };
+    loadUserRole();
+  }, []);
 
   useEffect(() => {
     if (matchHistory && matchHistory.length > 0) {
@@ -88,7 +101,11 @@ export default function MatchHistoryScreen() {
     });
   }, [matches, selectedDate, selectedPlayer]);
 
-  const handleDeleteMatch = (id: number) => {
+  const handleDelete = async (matchId: number) => {
+    if (userRole !== "admin") {
+      Alert.alert(t("error", language), "Only admin can delete matches");
+      return;
+    }
     Alert.alert(
       language === "en" ? "Delete Match" : "Διαγραφή Αγώνα",
       language === "en" ? "Are you sure?" : "Είστε σίγουροι;",
@@ -98,8 +115,8 @@ export default function MatchHistoryScreen() {
           text: language === "en" ? "Delete" : "Διαγραφή",
           onPress: async () => {
             try {
-              await deleteMatchAsync({ matchId: id });
-              setMatches(matches.filter((m) => m.id !== id));
+              await deleteMatchAsync({ matchId: matchId, adminUsername: "SHERUDO" });
+              setMatches(matches.filter((m) => m.id !== matchId));
             } catch (error) {
               Alert.alert(language === "en" ? "Error" : "Σφάλμα", "Failed to delete match.");
             }
@@ -110,7 +127,11 @@ export default function MatchHistoryScreen() {
     );
   };
 
-  const handleEditMatch = (match: MatchRecord) => {
+  const handleEdit = (match: MatchRecord) => {
+    if (userRole !== "admin") {
+      Alert.alert(t("error", language), "Only admin can edit matches");
+      return;
+    }
     router.push({
       pathname: "/edit-match",
       params: {
@@ -157,7 +178,7 @@ export default function MatchHistoryScreen() {
 
       <View className="flex-row gap-2 mt-3">
         <TouchableOpacity
-          onPress={() => handleEditMatch(match)}
+          onPress={() => handleEdit(match)}
           className="flex-1 bg-primary rounded-lg py-2 active:opacity-80"
         >
           <Text className="text-white font-semibold text-center text-sm">
@@ -165,7 +186,7 @@ export default function MatchHistoryScreen() {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleDeleteMatch(match.id)}
+          onPress={() => handleDelete(match.id)}
           className="flex-1 bg-error rounded-lg py-2 active:opacity-80"
         >
           <Text className="text-white font-semibold text-center text-sm">

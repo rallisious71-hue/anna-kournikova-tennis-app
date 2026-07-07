@@ -90,6 +90,8 @@ export const players = mysqlTable("players", {
   username: varchar("username", { length: 255 }).notNull().unique(),
   /** Hashed password */
   passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  /** Player role: admin or user */
+  role: mysqlEnum("role", ["admin", "user"]).default("user").notNull(),
   /** Account creation date */
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   /** Last update */

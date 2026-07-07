@@ -127,3 +127,14 @@
 - [x] Redesign settings screen with retro boxes
 - [x] Add dark background for PS1 feel
 - [x] Update all UI elements with retro styling
+
+## New Feature - Update 12 - Admin System
+
+- [x] Add role field to players table (admin/user)
+- [x] Create migration for role column
+- [x] Set SHERUDO ΣΤΕΦΑΝΟΣ as admin on registration
+- [x] Implement API role checks for edit/delete operations
+- [x] Hide edit/delete buttons for regular users
+- [x] Show admin-only controls for admin user
+- [ ] Create whitelist of 4 authorized players
+- [ ] Restrict registration to authorized players only

@@ -1,0 +1,1 @@
+ALTER TABLE `players` ADD `role` enum('admin','user') DEFAULT 'user' NOT NULL;

@@ -29,6 +29,13 @@
       "when": 1783323546043,
       "tag": "0003_illegal_thunderbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1783447111363,
+      "tag": "0004_clear_warstar",
+      "breakpoints": true
     }
   ]
 }

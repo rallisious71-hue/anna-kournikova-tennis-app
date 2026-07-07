@@ -29,10 +29,11 @@ export default function LoginScreen() {
     try {
       const result = await loginMutation.refetch();
       if (result.data) {
-        // Save user data
+        // Save user data including role
         await AsyncStorage.setItem("user_id", result.data.id.toString());
         await AsyncStorage.setItem("user_name", result.data.name);
         await AsyncStorage.setItem("username", result.data.username);
+        await AsyncStorage.setItem("user_role", result.data.role || "user");
         router.replace("/(tabs)");
       }
     } catch (error: any) {

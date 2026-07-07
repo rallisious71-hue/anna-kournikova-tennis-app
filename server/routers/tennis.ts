@@ -75,7 +75,7 @@ export const tennisRouter = router({
   }),
 
   /**
-   * Update an existing match
+   * Update an existing match (admin only)
    */
   updateMatch: publicProcedure
     .input(
@@ -86,9 +86,14 @@ export const tennisRouter = router({
         team1Games: z.number(),
         team2Games: z.number(),
         durationSeconds: z.number().int().min(0).optional(),
+        adminUsername: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
+      // Check if user is admin
+      if (input.adminUsername !== "SHERUDO") {
+        throw new Error("Only admin can edit matches");
+      }
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
@@ -118,11 +123,15 @@ export const tennisRouter = router({
     }),
 
   /**
-   * Delete a match and update player statistics
+   * Delete a match and update player statistics (admin only)
    */
   deleteMatch: publicProcedure
-    .input(z.object({ matchId: z.number() }))
+    .input(z.object({ matchId: z.number(), adminUsername: z.string().optional() }))
     .mutation(async ({ input }) => {
+      // Check if user is admin
+      if (input.adminUsername !== "SHERUDO") {
+        throw new Error("Only admin can delete matches");
+      }
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
