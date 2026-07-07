@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TouchableOpacity, FlatList, Alert } from "react
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScreenContainer } from "@/components/screen-container";
+import { HomeButton } from "@/components/home-button";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/i18n/translations";
@@ -63,9 +64,12 @@ export default function NewMatchScreen() {
         <View className="flex-1">
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-xl font-bold text-foreground">{t("selectPlayer", language)}</Text>
-            <TouchableOpacity onPress={() => setShowPlayerList(null)}>
-              <Text className="text-2xl text-foreground">✕</Text>
-            </TouchableOpacity>
+            <View className="flex-row items-center gap-2">
+              <HomeButton />
+              <TouchableOpacity onPress={() => setShowPlayerList(null)}>
+                <Text className="text-2xl text-foreground">✕</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           {players.length > 0 ? (
             <FlatList
@@ -98,9 +102,14 @@ export default function NewMatchScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="flex-1 gap-6">
           {/* Header */}
-          <View className="items-center gap-2">
-            <Text className="text-3xl font-bold text-foreground">{t("newMatchTitle", language)}</Text>
-            <Text className="text-sm text-muted">{t("newMatchSubtitle", language)}</Text>
+          <View className="gap-2">
+            <View className="flex-row justify-end">
+              <HomeButton />
+            </View>
+            <View className="items-center gap-2">
+              <Text className="text-3xl font-bold text-foreground">{t("newMatchTitle", language)}</Text>
+              <Text className="text-sm text-muted">{t("newMatchSubtitle", language)}</Text>
+            </View>
           </View>
 
           {/* Team 1 */}
@@ -137,3 +146,4 @@ export default function NewMatchScreen() {
     </ScreenContainer>
   );
 }
+
