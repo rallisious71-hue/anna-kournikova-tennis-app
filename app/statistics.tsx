@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TouchableOpacity, FlatList } from "react-native
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
+import { HomeButton } from "@/components/home-button";
 import { useTennisApi } from "@/hooks/use-tennis-api";
 
 interface PlayerRank {
@@ -11,6 +12,22 @@ interface PlayerRank {
   wins: number;
   gamesWon: number;
   percentage: number;
+  /** Average duration (in seconds) of matches this player has WON */
+  avgWinDurationSeconds: number;
+  /**
+   * Current streak: positive N = N consecutive wins, negative N = N consecutive losses, 0 = no matches.
+   */
+  streak: number;
+}
+
+/** Formats a duration in seconds as "Xλ Yδ" (or "Xω Yλ" when over an hour). */
+function formatDuration(totalSeconds: number) {
+  if (!totalSeconds || totalSeconds <= 0) return "—";
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  if (hours > 0) return `${hours}ω ${minutes}λ`;
+  return `${minutes}λ ${seconds}δ`;
 }
 
 interface TeamRank {
@@ -35,22 +52,79 @@ export default function StatisticsScreen() {
 
   useEffect(() => {
     if (playerStats && playerStats.length > 0) {
+      // Walk match history in chronological order to derive, per player:
+      // - the list of durations of matches they WON (for the average win time)
+      // - their current streak (consecutive wins/losses ending at their most recent match)
+      const chronological = [...matchHistory].sort(
+        (a: any, b: any) => new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime()
+      );
+
+      const winDurationsByPlayer = new Map<string, number[]>();
+      const resultsByPlayer = new Map<string, boolean[]>();
+
+      chronological.forEach((m: any) => {
+        const team1 = [m.team1Player1, m.team1Player2];
+        const team2 = [m.team2Player1, m.team2Player2];
+
+        team1.forEach((player) => {
+          const won = m.winner === 1;
+          if (!resultsByPlayer.has(player)) resultsByPlayer.set(player, []);
+          resultsByPlayer.get(player)!.push(won);
+          if (won && m.durationSeconds) {
+            if (!winDurationsByPlayer.has(player)) winDurationsByPlayer.set(player, []);
+            winDurationsByPlayer.get(player)!.push(m.durationSeconds);
+          }
+        });
+
+        team2.forEach((player) => {
+          const won = m.winner === 2;
+          if (!resultsByPlayer.has(player)) resultsByPlayer.set(player, []);
+          resultsByPlayer.get(player)!.push(won);
+          if (won && m.durationSeconds) {
+            if (!winDurationsByPlayer.has(player)) winDurationsByPlayer.set(player, []);
+            winDurationsByPlayer.get(player)!.push(m.durationSeconds);
+          }
+        });
+      });
+
+      const computeStreak = (results: boolean[]) => {
+        if (results.length === 0) return 0;
+        const lastResult = results[results.length - 1];
+        let streak = 0;
+        for (let i = results.length - 1; i >= 0; i--) {
+          if (results[i] === lastResult) streak++;
+          else break;
+        }
+        return lastResult ? streak : -streak;
+      };
+
       const ranked = playerStats
-        .map((stat) => ({
-          rank: 0,
-          name: stat.playerName,
-          matches: stat.matchesPlayed,
-          wins: stat.matchesWon,
-          gamesWon: stat.gamesWon,
-          percentage: stat.matchesPlayed > 0 ? Math.round((stat.matchesWon / stat.matchesPlayed) * 100) : 0,
-        }))
+        .map((stat) => {
+          const winDurations = winDurationsByPlayer.get(stat.playerName) || [];
+          const avgWinDurationSeconds =
+            winDurations.length > 0
+              ? Math.round(winDurations.reduce((sum, d) => sum + d, 0) / winDurations.length)
+              : 0;
+          const streak = computeStreak(resultsByPlayer.get(stat.playerName) || []);
+
+          return {
+            rank: 0,
+            name: stat.playerName,
+            matches: stat.matchesPlayed,
+            wins: stat.matchesWon,
+            gamesWon: stat.gamesWon,
+            percentage: stat.matchesPlayed > 0 ? Math.round((stat.matchesWon / stat.matchesPlayed) * 100) : 0,
+            avgWinDurationSeconds,
+            streak,
+          };
+        })
         .sort((a, b) => (sortBy === "games" ? b.gamesWon - a.gamesWon : b.wins - a.wins))
         .map((p, index) => ({ ...p, rank: index + 1 }));
       setPlayers(ranked);
     } else {
       setPlayers([]);
     }
-  }, [playerStats, sortBy]);
+  }, [playerStats, matchHistory, sortBy]);
 
   // Team (doubles pair) effectiveness - computed from full match history
   useEffect(() => {
@@ -89,23 +163,50 @@ export default function StatisticsScreen() {
     }
   }, [matchHistory]);
 
-  const renderPlayerRow = ({ item }: { item: PlayerRank }) => (
-    <View className="flex-row items-center gap-4 bg-surface rounded-lg p-4 mb-3 border border-border">
-      <View className="w-10 h-10 rounded-full bg-primary items-center justify-center">
-        <Text className="text-white font-bold text-sm">{item.rank}</Text>
+  const renderPlayerRow = ({ item }: { item: PlayerRank }) => {
+    const isOnFire = item.streak >= 3; // 3+ σερί νίκες
+    const isFrozen = item.streak <= -3; // 3+ σερί ήττες
+
+    return (
+      <View
+        className={`flex-row items-center gap-4 bg-surface rounded-lg p-4 mb-3 border ${
+          isOnFire ? "border-orange-400" : isFrozen ? "border-cyan-400" : "border-border"
+        }`}
+      >
+        <View className="w-10 h-10 rounded-full bg-primary items-center justify-center">
+          <Text className="text-white font-bold text-sm">{item.rank}</Text>
+        </View>
+        <View className="flex-1">
+          <View className="flex-row items-center gap-1">
+            {isOnFire && <Text className="text-base">🔥</Text>}
+            {isFrozen && <Text className="text-base">🧊</Text>}
+            <Text
+              className={`font-semibold ${
+                isOnFire ? "text-orange-500 font-extrabold" : isFrozen ? "text-cyan-500" : "text-foreground"
+              }`}
+            >
+              {item.name}
+            </Text>
+          </View>
+          <Text className="text-xs text-muted mt-1">{item.matches} matches</Text>
+          <Text className="text-xs text-muted mt-0.5">
+            Μ.Ο. διάρκειας νίκης: {formatDuration(item.avgWinDurationSeconds)}
+          </Text>
+          {item.streak !== 0 && (
+            <Text className={`text-xs mt-0.5 ${isOnFire ? "text-orange-500" : isFrozen ? "text-cyan-500" : "text-muted"}`}>
+              Σερί: {item.streak > 0 ? `${item.streak} νίκες` : `${Math.abs(item.streak)} ήττες`}
+            </Text>
+          )}
+        </View>
+        <View className="items-end">
+          <Text className="text-lg font-bold text-primary">
+            {sortBy === "games" ? item.gamesWon : item.wins}
+          </Text>
+          <Text className="text-xs text-muted">{sortBy === "games" ? "games" : `${item.percentage}%`}</Text>
+        </View>
       </View>
-      <View className="flex-1">
-        <Text className="text-foreground font-semibold">{item.name}</Text>
-        <Text className="text-xs text-muted mt-1">{item.matches} matches</Text>
-      </View>
-      <View className="items-end">
-        <Text className="text-lg font-bold text-primary">
-          {sortBy === "games" ? item.gamesWon : item.wins}
-        </Text>
-        <Text className="text-xs text-muted">{sortBy === "games" ? "games" : `${item.percentage}%`}</Text>
-      </View>
-    </View>
-  );
+    );
+  };
 
   const renderTeamRow = ({ item }: { item: TeamRank }) => (
     <View className="flex-row items-center gap-4 bg-surface rounded-lg p-4 mb-3 border border-border">
@@ -141,12 +242,15 @@ export default function StatisticsScreen() {
                 {isTeamsTab ? "Αποτελεσματικότητα Ζευγαριών" : "Player Rankings"}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="w-10 h-10 rounded-full bg-surface border border-border items-center justify-center"
-            >
-              <Text className="text-foreground text-lg">×</Text>
-            </TouchableOpacity>
+            <View className="flex-row gap-2">
+              <HomeButton />
+              <TouchableOpacity
+                onPress={() => router.back()}
+                className="w-10 h-10 rounded-full bg-surface border border-border items-center justify-center"
+              >
+                <Text className="text-foreground text-lg">×</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Sort Options */}
