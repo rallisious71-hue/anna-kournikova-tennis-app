@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList } from "react
 import { useRouter } from "expo-router";
 import { useState, useEffect, useMemo } from "react";
 import { ScreenContainer } from "@/components/screen-container";
+import { HomeButton } from "@/components/home-button";
 import { useTennisApi } from "@/hooks/use-tennis-api";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/i18n/translations";
@@ -180,14 +181,17 @@ export default function MatchHistoryScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="gap-4">
           {/* Header */}
-          <View className="gap-2">
-            <Text className="text-2xl font-bold text-foreground">
-              {language === "en" ? "Match History" : "Ιστορικό Αγώνων"}
-            </Text>
-            <Text className="text-sm text-muted">
-              {language === "en" ? "Total matches: " : "Σύνολο αγώνων: "}
-              {filteredMatches.length}
-            </Text>
+          <View className="flex-row items-start justify-between gap-2">
+            <View className="gap-2">
+              <Text className="text-2xl font-bold text-foreground">
+                {language === "en" ? "Match History" : "Ιστορικό Αγώνων"}
+              </Text>
+              <Text className="text-sm text-muted">
+                {language === "en" ? "Total matches: " : "Σύνολο αγώνων: "}
+                {filteredMatches.length}
+              </Text>
+            </View>
+            <HomeButton />
           </View>
 
           {/* Filter Toggle Button */}
