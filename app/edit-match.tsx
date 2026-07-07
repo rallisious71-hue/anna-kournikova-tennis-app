@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
+import { HomeButton } from "@/components/home-button";
 import { useTennisApi } from "@/hooks/use-tennis-api";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/i18n/translations";
@@ -79,6 +80,9 @@ export default function EditMatchScreen() {
         <View className="flex-1 gap-6">
           {/* Header */}
           <View className="gap-2">
+            <View className="flex-row justify-end">
+              <HomeButton />
+            </View>
             <Text className="text-2xl font-bold text-foreground text-center">Edit Match</Text>
             <Text className="text-xs text-foreground text-center">
               {params.team1Player1} & {params.team1Player2} vs {params.team2Player1} & {params.team2Player2}
