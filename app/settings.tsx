@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert, Switch } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
+import { HomeButton } from "@/components/home-button";
 import { useLanguage } from "@/lib/language-context";
 import { useThemeContext } from "@/lib/theme-provider";
 import { t } from "@/lib/i18n/translations";
@@ -70,12 +71,15 @@ export default function SettingsScreen() {
               <Text className="text-3xl font-black text-black">
                 {language === "en" ? "SETTINGS" : "ΡΥΘΜΙΣΕΙΣ"}
               </Text>
-              <TouchableOpacity
-                onPress={() => router.back()}
-                className="w-12 h-12 rounded-lg bg-yellow-300 border-2 border-yellow-400 items-center justify-center active:scale-95"
-              >
-                <Text className="text-black text-2xl font-black">×</Text>
-              </TouchableOpacity>
+              <View className="flex-row gap-2">
+                <HomeButton variant="retro" />
+                <TouchableOpacity
+                  onPress={() => router.back()}
+                  className="w-12 h-12 rounded-lg bg-yellow-300 border-2 border-yellow-400 items-center justify-center active:scale-95"
+                >
+                  <Text className="text-black text-2xl font-black">×</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             <Text className="text-black font-bold text-sm">
               {language === "en" ? "Customize your experience" : "Προσαρμόστε την εμπειρία σας"}
