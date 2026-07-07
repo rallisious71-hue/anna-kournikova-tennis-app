@@ -6,6 +6,7 @@ import { HomeButton } from "@/components/home-button";
 import { useTennisApi } from "@/hooks/use-tennis-api";
 import { ScoreInput } from "@/components/score-input";
 import { DurationInput } from "@/components/duration-input";
+import { useSoundEffects } from "@/hooks/use-sound-effects";
 
 export default function LiveMatchScreen() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function LiveMatchScreen() {
   const [isEditingDuration, setIsEditingDuration] = useState(false);
 
   const { saveMatchAsync, deleteMatchAsync } = useTennisApi();
+  const { playButtonClick, playSuccess, playError, playMatchStart, playMatchEnd } = useSoundEffects();
 
   // Timer effect
   useEffect(() => {
@@ -110,6 +112,7 @@ export default function LiveMatchScreen() {
 
   const handleUndo = async () => {
     if (!lastMatchId) {
+      await playError();
       Alert.alert("Error", "No match to undo");
       return;
     }
@@ -117,6 +120,7 @@ export default function LiveMatchScreen() {
     setIsUndoing(true);
     try {
       await deleteMatchAsync({ matchId: lastMatchId });
+      await playSuccess();
 
       setShowUndo(false);
       setLastMatchId(null);
@@ -126,6 +130,7 @@ export default function LiveMatchScreen() {
       ]);
     } catch (error: any) {
       console.error("[Match Undo] Error:", error);
+      await playError();
       const errorMessage = error?.message || "Failed to undo match. Please try again.";
       Alert.alert("Error", errorMessage);
     } finally {
@@ -133,12 +138,14 @@ export default function LiveMatchScreen() {
     }
   };
 
-  const handleResetScores = () => {
+  const handleResetScores = async () => {
+    await playButtonClick();
     Alert.alert("Reset Scores", "Reset all scores to 0?", [
       { text: "Cancel", onPress: () => {} },
       {
         text: "Reset",
-        onPress: () => {
+        onPress: async () => {
+          await playButtonClick();
           setTeam1Sets(0);
           setTeam2Sets(0);
           setTeam1Games(0);

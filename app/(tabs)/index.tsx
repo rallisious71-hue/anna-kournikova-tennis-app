@@ -5,12 +5,14 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useLanguage } from "@/lib/language-context";
 import { useThemeContext } from "@/lib/theme-provider";
 import { t } from "@/lib/i18n/translations";
+import { useSoundEffects } from "@/hooks/use-sound-effects";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { language, setLanguage } = useLanguage();
   const { colorScheme } = useThemeContext();
+  const { playButtonClick } = useSoundEffects();
   const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,6 +25,11 @@ export default function HomeScreen() {
 
   const isDark = colorScheme === "dark";
 
+  const handleButtonPress = async (route: any) => {
+    await playButtonClick();
+    router.push(route);
+  };
+
   return (
     <ScreenContainer className={`p-0 ${isDark ? "bg-gray-900" : "bg-white"}`}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
@@ -32,7 +39,10 @@ export default function HomeScreen() {
             {/* Language Toggle - Retro Style */}
             <View className="flex-row justify-end gap-2">
               <TouchableOpacity
-                onPress={() => setLanguage("en")}
+              onPress={async () => {
+                await playButtonClick();
+                setLanguage("en");
+              }}
                 className={`px-4 py-2 rounded border-2 ${
                   language === "en"
                     ? "bg-yellow-300 border-yellow-400"
@@ -42,7 +52,10 @@ export default function HomeScreen() {
                 <Text className="font-bold text-sm text-black">EN</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setLanguage("el")}
+              onPress={async () => {
+                await playButtonClick();
+                setLanguage("el");
+              }}
                 className={`px-4 py-2 rounded border-2 ${
                   language === "el"
                     ? "bg-yellow-300 border-yellow-400"
@@ -53,36 +66,24 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Retro Title */}
-            <View className="items-center gap-3">
-              <Text className="text-4xl font-black text-black drop-shadow-lg">
-                SMASH COURT
+            {/* Welcome Message */}
+            <View className="gap-1">
+              <Text className="text-2xl font-black text-black">
+                {language === "en" ? "🎾 SMASH COURT" : "🎾 SMASH COURT"}
               </Text>
-              <Text className="text-2xl font-black text-yellow-300 drop-shadow-lg">
-                TENNIS
-              </Text>
-              <Text className="text-xs font-bold text-black text-center">
+              <Text className="text-sm font-bold text-black">
                 {language === "en"
-                  ? "TRACK YOUR DOUBLES MATCHES"
-                  : "ΠΑΡΑΚΟΛΟΥΘΗΣΤΕ ΤΟΥΣ ΑΓΩΝΕΣ ΣΑΣ"}
+                  ? `Welcome, ${userName || "Player"}!`
+                  : `Καλώς ήρθατε, ${userName || "Παίκτη"}!`}
               </Text>
             </View>
-
-            {/* Welcome Message */}
-            {userName && (
-              <View className="bg-white rounded-lg p-3 border-2 border-yellow-300">
-                <Text className="text-black font-bold text-center">
-                  {language === "en" ? "Welcome" : "Καλώς ήρθατε"}, {userName}!
-                </Text>
-              </View>
-            )}
           </View>
 
           {/* Main Content */}
           <View className={`flex-1 px-6 py-8 gap-4 ${isDark ? "bg-gray-900" : "bg-white"}`}>
             {/* Start New Match - Retro Button */}
             <TouchableOpacity
-              onPress={() => router.push("/new-match")}
+              onPress={() => handleButtonPress("/new-match")}
               className="bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-lg p-6 border-4 border-cyan-600 active:scale-95"
             >
               <View className="items-center gap-2">
@@ -100,7 +101,7 @@ export default function HomeScreen() {
 
             {/* Statistics - Retro Button */}
             <TouchableOpacity
-              onPress={() => router.push("/statistics")}
+              onPress={() => handleButtonPress("/statistics")}
               className={`bg-gradient-to-r from-magenta-400 to-magenta-500 rounded-lg p-6 border-4 border-magenta-600 active:scale-95 ${
                 isDark ? "bg-gradient-to-r from-magenta-600 to-magenta-700" : ""
               }`}
@@ -120,7 +121,7 @@ export default function HomeScreen() {
 
             {/* Match History - Retro Button */}
             <TouchableOpacity
-              onPress={() => router.push("/match-history")}
+              onPress={() => handleButtonPress("/match-history")}
               className="bg-gradient-to-r from-yellow-300 to-yellow-400 rounded-lg p-6 border-4 border-yellow-500 active:scale-95"
             >
               <View className="items-center gap-2">
@@ -171,7 +172,10 @@ export default function HomeScreen() {
 
             {/* Settings Link - Retro Style */}
             <TouchableOpacity
-              onPress={() => router.push("/settings")}
+              onPress={async () => {
+                await playButtonClick();
+                router.push("/settings");
+              }}
               className={`rounded-lg p-4 border-2 active:opacity-80 mt-4 ${
                 isDark
                   ? "bg-gray-800 border-cyan-400"
