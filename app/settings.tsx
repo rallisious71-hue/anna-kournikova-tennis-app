@@ -115,7 +115,7 @@ export default function SettingsScreen() {
                       language === "en"
                         ? "text-black"
                         : isDark
-                        ? "text-gray-300"
+                        ? "text-cyan-300"
                         : "text-gray-700"
                     }`}
                   >
@@ -137,7 +137,7 @@ export default function SettingsScreen() {
                       language === "el"
                         ? "text-black"
                         : isDark
-                        ? "text-gray-300"
+                        ? "text-cyan-300"
                         : "text-gray-700"
                     }`}
                   >
@@ -166,7 +166,7 @@ export default function SettingsScreen() {
                   thumbColor={colorScheme === "dark" ? "#FF006E" : "#FFD700"}
                 />
               </View>
-              <Text className={`text-xs ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+              <Text className={`text-xs ${isDark ? "text-cyan-300" : "text-gray-600"}`}>
                 {language === "en"
                   ? "Toggle between light and dark themes"
                   : "Εναλλαγή μεταξύ ανοιχτών και σκοτεινών θεμάτων"}
@@ -217,7 +217,7 @@ export default function SettingsScreen() {
                   {language === "en" ? "RESET ALL DATA" : "ΕΠΑΝΑΦΟΡΑ ΟΛΩΝ"}
                 </Text>
               </TouchableOpacity>
-              <Text className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+              <Text className={`text-xs ${isDark ? "text-cyan-300" : "text-gray-600"}`}>
                 {language === "en"
                   ? "Permanently delete all matches and statistics"
                   : "Διαγράψτε μόνιμα όλους τους αγώνες και τα στατιστικά"}

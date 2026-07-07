@@ -149,20 +149,20 @@ export default function HomeScreen() {
               </Text>
               <View className="flex-row gap-3">
                 <View className="flex-1 bg-cyan-500 rounded-lg p-4 border-2 border-cyan-600 items-center">
-                  <Text className="text-black font-black text-2xl">0</Text>
-                  <Text className="text-black font-bold text-xs">
+                  <Text className={`font-black text-2xl ${isDark ? "text-cyan-300" : "text-black"}`}>0</Text>
+                  <Text className={`font-bold text-xs ${isDark ? "text-cyan-300" : "text-black"}`}>
                     {language === "en" ? "Matches" : "Αγώνες"}
                   </Text>
                 </View>
                 <View className="flex-1 bg-magenta-500 rounded-lg p-4 border-2 border-magenta-600 items-center">
-                  <Text className="text-black font-black text-2xl">0</Text>
-                  <Text className="text-black font-bold text-xs">
+                  <Text className={`font-black text-2xl ${isDark ? "text-cyan-300" : "text-black"}`}>0</Text>
+                  <Text className={`font-bold text-xs ${isDark ? "text-cyan-300" : "text-black"}`}>
                     {language === "en" ? "Wins" : "Νίκες"}
                   </Text>
                 </View>
                 <View className="flex-1 bg-yellow-400 rounded-lg p-4 border-2 border-yellow-500 items-center">
-                  <Text className="text-black font-black text-2xl">0%</Text>
-                  <Text className="text-black font-bold text-xs">
+                  <Text className={`font-black text-2xl ${isDark ? "text-cyan-300" : "text-black"}`}>0%</Text>
+                  <Text className={`font-bold text-xs ${isDark ? "text-cyan-300" : "text-black"}`}>
                     {language === "en" ? "Win Rate" : "% Νικών"}
                   </Text>
                 </View>
@@ -174,7 +174,7 @@ export default function HomeScreen() {
               onPress={() => router.push("/settings")}
               className={`rounded-lg p-4 border-2 active:opacity-80 mt-4 ${
                 isDark
-                  ? "bg-gray-800 border-gray-600"
+                  ? "bg-gray-800 border-cyan-400"
                   : "bg-gray-100 border-gray-300"
               }`}
             >
