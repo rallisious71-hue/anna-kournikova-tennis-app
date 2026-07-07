@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
+import { HomeButton } from "@/components/home-button";
 import { useTennisApi } from "@/hooks/use-tennis-api";
 import { ScoreInput } from "@/components/score-input";
 import { DurationInput } from "@/components/duration-input";
@@ -148,12 +149,45 @@ export default function LiveMatchScreen() {
     ]);
   };
 
+  const goHome = () => {
+    try {
+      router.dismissTo("/");
+    } catch {
+      router.replace("/");
+    }
+  };
+
+  const handleGoHome = () => {
+    const hasProgress = team1Sets > 0 || team2Sets > 0 || team1Games > 0 || team2Games > 0 || elapsedSeconds > 0;
+    if (hasProgress) {
+      Alert.alert(
+        "Έξοδος από τον αγώνα",
+        "Ο αγώνας δεν έχει αποθηκευτεί. Θέλετε σίγουρα να επιστρέψετε στην αρχική σελίδα;",
+        [
+          { text: "Ακύρωση", onPress: () => {} },
+          { text: "Έξοδος", style: "destructive", onPress: goHome },
+        ]
+      );
+    } else {
+      goHome();
+    }
+  };
+
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="flex-1 gap-6">
           {/* Match Header */}
           <View className="gap-2">
+            <View className="flex-row justify-end">
+              <TouchableOpacity
+                onPress={handleGoHome}
+                className="w-10 h-10 rounded-full bg-surface border border-border items-center justify-center active:opacity-80"
+                accessibilityLabel="Αρχική σελίδα"
+              >
+                <Text className="text-foreground text-lg">🏠</Text>
+              </TouchableOpacity>
+            </View>
             <Text className="text-2xl font-bold text-foreground text-center">Live Match</Text>
             <Text className="text-xs text-foreground text-center">
               {params.team1Player1} & {params.team1Player2} vs {params.team2Player1} & {params.team2Player2}
