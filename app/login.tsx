@@ -93,13 +93,6 @@ export default function LoginScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Register Link */}
-          <View className="flex-row items-center justify-center gap-2">
-            <Text className="text-muted">{t("dontHaveAccount", language)}</Text>
-            <TouchableOpacity onPress={() => router.push("../register")}>
-              <Text className="text-primary font-semibold">{t("register", language)}</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </ScrollView>
     </ScreenContainer>
