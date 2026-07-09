@@ -26,6 +26,13 @@ export const playersRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
+      // This app is limited to a fixed set of accounts (4 players + 1 admin).
+      // Once they exist, self-registration is closed.
+      const allPlayers = await db.select().from(players);
+      if (allPlayers.length >= 5) {
+        throw new Error("Registration is closed. Contact the admin to get an account.");
+      }
+
       // Check if username already exists
       const existing = await db.select().from(players).where(eq(players.username, input.username)).limit(1);
 
@@ -36,8 +43,8 @@ export const playersRouter = router({
       // Hash password
       const passwordHash = hashPassword(input.password);
 
-      // Determine role: admin for SHERUDO ΣΤΕΦΑΝΟΣ, user for others
-      const role = input.username === "SHERUDO" || input.fullName === "SHERUDO ΣΤΕΦΑΝΟΣ" ? "admin" : "user";
+      // Determine role: only the "admin" username gets admin rights, everyone else is a view-only user
+      const role = input.username.toLowerCase() === "admin" ? "admin" : "user";
 
       // Create player
       await db.insert(players).values({

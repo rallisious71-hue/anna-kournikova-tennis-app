@@ -1,12 +1,26 @@
 import { router, publicProcedure } from "@/server/_core/trpc";
 import { z } from "zod";
 import { getDb } from "@/server/db";
-import { matches, playerStats } from "@/drizzle/schema";
+import { matches, playerStats, players } from "@/drizzle/schema";
 import { eq, desc } from "drizzle-orm";
+
+/**
+ * Verifies (server-side, against the DB) that the given username belongs to
+ * an admin account. The client cannot be trusted to self-report its role.
+ */
+async function requireAdmin(db: NonNullable<Awaited<ReturnType<typeof getDb>>>, username: string | undefined) {
+  if (!username) {
+    throw new Error("Only admin can perform this action");
+  }
+  const player = await db.select().from(players).where(eq(players.username, username)).limit(1);
+  if (player.length === 0 || player[0].role !== "admin") {
+    throw new Error("Only admin can perform this action");
+  }
+}
 
 export const tennisRouter = router({
   /**
-   * Save a completed match to the database
+   * Save a completed match to the database (admin only)
    */
   saveMatch: publicProcedure
     .input(
@@ -21,11 +35,13 @@ export const tennisRouter = router({
         team2Games: z.number(),
         winner: z.number().int(),
         durationSeconds: z.number().int().min(0).default(0),
+        username: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
+      await requireAdmin(db, input.username);
 
       // Insert match
       const result = await db.insert(matches).values({
@@ -86,16 +102,13 @@ export const tennisRouter = router({
         team1Games: z.number(),
         team2Games: z.number(),
         durationSeconds: z.number().int().min(0).optional(),
-        adminUsername: z.string().optional(),
+        username: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
-      // Check if user is admin
-      if (input.adminUsername !== "SHERUDO") {
-        throw new Error("Only admin can edit matches");
-      }
       const db = await getDb();
       if (!db) throw new Error("Database not available");
+      await requireAdmin(db, input.username);
 
       const match = await db.select().from(matches).where(eq(matches.id, input.matchId)).limit(1);
 
@@ -126,14 +139,11 @@ export const tennisRouter = router({
    * Delete a match and update player statistics (admin only)
    */
   deleteMatch: publicProcedure
-    .input(z.object({ matchId: z.number(), adminUsername: z.string().optional() }))
+    .input(z.object({ matchId: z.number(), username: z.string().optional() }))
     .mutation(async ({ input }) => {
-      // Check if user is admin
-      if (input.adminUsername !== "SHERUDO") {
-        throw new Error("Only admin can delete matches");
-      }
       const db = await getDb();
       if (!db) throw new Error("Database not available");
+      await requireAdmin(db, input.username);
 
       const match = await db.select().from(matches).where(eq(matches.id, input.matchId)).limit(1);
 
