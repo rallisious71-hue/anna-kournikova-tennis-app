@@ -1,15 +1,29 @@
 import { ScrollView, Text, View, TouchableOpacity, FlatList, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { HomeButton } from "@/components/home-button";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/i18n/translations";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function NewMatchScreen() {
   const router = useRouter();
   const { language } = useLanguage();
+
+  // Only the admin account may start a new match. Anyone else who lands
+  // here (e.g. by typing the URL directly) gets bounced back to the home screen.
+  useEffect(() => {
+    (async () => {
+      const role = await AsyncStorage.getItem("user_role");
+      if (role !== "admin") {
+        Alert.alert("Access denied", "Only the admin can start a new match.");
+        router.replace("/(tabs)");
+      }
+    })();
+  }, [router]);
+
   const [team1Player1, setTeam1Player1] = useState("");
   const [team1Player2, setTeam1Player2] = useState("");
   const [team2Player1, setTeam2Player1] = useState("");
