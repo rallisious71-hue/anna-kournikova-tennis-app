@@ -30,6 +30,7 @@ export default function SettingsScreen() {
             await AsyncStorage.removeItem("user_id");
             await AsyncStorage.removeItem("user_name");
             await AsyncStorage.removeItem("username");
+            await AsyncStorage.removeItem("user_role");
             router.replace("../login");
           },
           style: "destructive",
