@@ -14,14 +14,21 @@ export default function HomeScreen() {
   const { colorScheme } = useThemeContext();
   const { playButtonClick } = useSoundEffects();
   const [userName, setUserName] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<"admin" | "user">("user");
 
   useEffect(() => {
-    const loadUserName = async () => {
+    const loadUser = async () => {
       const name = await AsyncStorage.getItem("user_name");
       setUserName(name);
+      const role = await AsyncStorage.getItem("user_role");
+      if (role === "admin" || role === "user") {
+        setUserRole(role);
+      }
     };
-    loadUserName();
+    loadUser();
   }, []);
+
+  const isAdmin = userRole === "admin";
 
   const isDark = colorScheme === "dark";
 
@@ -76,28 +83,35 @@ export default function HomeScreen() {
                   ? `Welcome, ${userName || "Player"}!`
                   : `Καλώς ήρθατε, ${userName || "Παίκτη"}!`}
               </Text>
+              {!isAdmin && (
+                <Text className="text-xs font-bold text-black opacity-70">
+                  {language === "en" ? "👁 View-only access" : "👁 Πρόσβαση μόνο για προβολή"}
+                </Text>
+              )}
             </View>
           </View>
 
           {/* Main Content */}
           <View className={`flex-1 px-6 py-8 gap-4 ${isDark ? "bg-gray-900" : "bg-white"}`}>
-            {/* Start New Match - Retro Button */}
-            <TouchableOpacity
-              onPress={() => handleButtonPress("/new-match")}
-              className="bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-lg p-6 border-4 border-cyan-600 active:scale-95"
-            >
-              <View className="items-center gap-2">
-                <Text className="text-3xl">🎾</Text>
-                <Text className="text-black font-black text-lg">
-                  {language === "en" ? "START NEW MATCH" : "ΝΕΟΣ ΑΓΩΝΑΣ"}
-                </Text>
-                <Text className="text-black font-bold text-xs text-center">
-                  {language === "en"
-                    ? "Enter players and track the game"
-                    : "Εισάγετε παίκτες και παρακολουθήστε τον αγώνα"}
-                </Text>
-              </View>
-            </TouchableOpacity>
+            {/* Start New Match - Retro Button (admin only) */}
+            {isAdmin && (
+              <TouchableOpacity
+                onPress={() => handleButtonPress("/new-match")}
+                className="bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-lg p-6 border-4 border-cyan-600 active:scale-95"
+              >
+                <View className="items-center gap-2">
+                  <Text className="text-3xl">🎾</Text>
+                  <Text className="text-black font-black text-lg">
+                    {language === "en" ? "START NEW MATCH" : "ΝΕΟΣ ΑΓΩΝΑΣ"}
+                  </Text>
+                  <Text className="text-black font-bold text-xs text-center">
+                    {language === "en"
+                      ? "Enter players and track the game"
+                      : "Εισάγετε παίκτες και παρακολουθήστε τον αγώνα"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
 
             {/* Statistics - Retro Button */}
             <TouchableOpacity
