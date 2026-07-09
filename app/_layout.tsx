@@ -1,11 +1,12 @@
 import "@/global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import {
@@ -19,6 +20,45 @@ import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { LanguageProvider } from "@/lib/language-context";
+
+// Screens that are reachable without being logged in.
+const PUBLIC_SEGMENTS = ["login", "register"];
+
+/**
+ * Guards every route behind a login screen. Checks AsyncStorage for a
+ * logged-in player on every navigation and redirects accordingly:
+ * - No logged-in player + trying to view a protected screen -> /login
+ * - Logged-in player + sitting on /login or /register -> /(tabs)
+ */
+function AuthGate() {
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const userId = await AsyncStorage.getItem("user_id");
+      if (cancelled) return;
+
+      const isAuthenticated = !!userId;
+      const currentSegment = segments[0];
+      const isPublicScreen = PUBLIC_SEGMENTS.includes(currentSegment ?? "");
+
+      if (!isAuthenticated && !isPublicScreen) {
+        router.replace("/login");
+      } else if (isAuthenticated && isPublicScreen) {
+        router.replace("/(tabs)");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [segments, router]);
+
+  return null;
+}
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -87,8 +127,11 @@ export default function RootLayout() {
           {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
           {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
           {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
+          <AuthGate />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="login" options={{ presentation: "fullScreenModal" }} />
+            <Stack.Screen name="register" options={{ presentation: "fullScreenModal" }} />
             <Stack.Screen name="oauth/callback" />
           </Stack>
           <StatusBar style="auto" />
