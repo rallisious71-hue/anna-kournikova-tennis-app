@@ -7,10 +7,23 @@ import { useTennisApi } from "@/hooks/use-tennis-api";
 import { ScoreInput } from "@/components/score-input";
 import { DurationInput } from "@/components/duration-input";
 import { useSoundEffects } from "@/hooks/use-sound-effects";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LiveMatchScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+
+  // Only the admin account may record matches. Anyone else who lands here
+  // (e.g. by typing the URL directly) gets bounced back to the home screen.
+  useEffect(() => {
+    (async () => {
+      const role = await AsyncStorage.getItem("user_role");
+      if (role !== "admin") {
+        Alert.alert("Access denied", "Only the admin can record matches.");
+        router.replace("/(tabs)");
+      }
+    })();
+  }, [router]);
 
   const [team1Sets, setTeam1Sets] = useState(0);
   const [team2Sets, setTeam2Sets] = useState(0);
@@ -72,6 +85,7 @@ export default function LiveMatchScreen() {
     setIsSaving(true);
     setIsTimerRunning(false);
     try {
+      const username = (await AsyncStorage.getItem("username")) || undefined;
       const matchData = {
         team1Player1: params.team1Player1 as string,
         team1Player2: params.team1Player2 as string,
@@ -83,6 +97,7 @@ export default function LiveMatchScreen() {
         team2Games,
         winner,
         durationSeconds: elapsedSeconds,
+        username,
       };
 
       console.log("[Match Save] Starting match save with data:", matchData);
@@ -119,7 +134,8 @@ export default function LiveMatchScreen() {
 
     setIsUndoing(true);
     try {
-      await deleteMatchAsync({ matchId: lastMatchId });
+      const username = (await AsyncStorage.getItem("username")) || undefined;
+      await deleteMatchAsync({ matchId: lastMatchId, username });
       await playSuccess();
 
       setShowUndo(false);
