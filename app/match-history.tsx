@@ -115,7 +115,8 @@ export default function MatchHistoryScreen() {
           text: language === "en" ? "Delete" : "Διαγραφή",
           onPress: async () => {
             try {
-              await deleteMatchAsync({ matchId: matchId, adminUsername: "SHERUDO" });
+              const username = (await AsyncStorage.getItem("username")) || undefined;
+              await deleteMatchAsync({ matchId: matchId, username });
               setMatches(matches.filter((m) => m.id !== matchId));
             } catch (error) {
               Alert.alert(language === "en" ? "Error" : "Σφάλμα", "Failed to delete match.");
@@ -176,24 +177,26 @@ export default function MatchHistoryScreen() {
         </View>
       </View>
 
-      <View className="flex-row gap-2 mt-3">
-        <TouchableOpacity
-          onPress={() => handleEdit(match)}
-          className="flex-1 bg-primary rounded-lg py-2 active:opacity-80"
-        >
-          <Text className="text-white font-semibold text-center text-sm">
-            {language === "en" ? "Edit" : "Επεξεργασία"}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleDelete(match.id)}
-          className="flex-1 bg-error rounded-lg py-2 active:opacity-80"
-        >
-          <Text className="text-white font-semibold text-center text-sm">
-            {language === "en" ? "Delete" : "Διαγραφή"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {userRole === "admin" && (
+        <View className="flex-row gap-2 mt-3">
+          <TouchableOpacity
+            onPress={() => handleEdit(match)}
+            className="flex-1 bg-primary rounded-lg py-2 active:opacity-80"
+          >
+            <Text className="text-white font-semibold text-center text-sm">
+              {language === "en" ? "Edit" : "Επεξεργασία"}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleDelete(match.id)}
+            className="flex-1 bg-error rounded-lg py-2 active:opacity-80"
+          >
+            <Text className="text-white font-semibold text-center text-sm">
+              {language === "en" ? "Delete" : "Διαγραφή"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 
