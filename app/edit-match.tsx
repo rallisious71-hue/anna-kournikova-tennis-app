@@ -16,7 +16,238 @@ export default function EditMatchScreen() {
 
   const [team1Sets, setTeam1Sets] = useState(0);
   const [team2Sets, setTeam2Sets] = useState(0);
+  const [team1Games, setTeam1Games] = useState(0);import { ScrollView, Text, View, TouchableOpacity, Alert } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useState, useEffect } from "react";
+import { ScreenContainer } from "@/components/screen-container";
+import { HomeButton } from "@/components/home-button";
+import { useTennisApi } from "@/hooks/use-tennis-api";
+import { useLanguage } from "@/lib/language-context";
+import { t } from "@/lib/i18n/translations";
+import { ScoreInput } from "@/components/score-input";
+import { DurationInput } from "@/components/duration-input";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+export default function EditMatchScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const { language } = useLanguage();
+
+  // Only the admin account may edit matches. Anyone else who lands here
+  // (e.g. by typing the URL directly) gets bounced back to the home screen.
+  useEffect(() => {
+    (async () => {
+      const role = await AsyncStorage.getItem("user_role");
+      if (role !== "admin") {
+        Alert.alert("Access denied", "Only the admin can edit matches.");
+        router.replace("/(tabs)");
+      }
+    })();
+  }, [router]);
+
+  const [team1Sets, setTeam1Sets] = useState(0);
+  const [team2Sets, setTeam2Sets] = useState(0);
   const [team1Games, setTeam1Games] = useState(0);
+  const [team2Games, setTeam2Games] = useState(0);
+  const [durationSeconds, setDurationSeconds] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const { updateMatch: updateMatchMutation } = useTennisApi();
+
+  useEffect(() => {
+    if (params.team1Sets) setTeam1Sets(parseInt(params.team1Sets as string));
+    if (params.team2Sets) setTeam2Sets(parseInt(params.team2Sets as string));
+    if (params.team1Games) setTeam1Games(parseInt(params.team1Games as string));
+    if (params.team2Games) setTeam2Games(parseInt(params.team2Games as string));
+    if (params.durationSeconds) setDurationSeconds(parseInt(params.durationSeconds as string));
+  }, [params]);
+
+  const handleSaveChanges = async () => {
+    if (team1Sets === 0 && team2Sets === 0) {
+      Alert.alert(t("error", language), "At least one team must have won sets");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const username = (await AsyncStorage.getItem("username")) || undefined;
+      await updateMatchMutation.mutateAsync({
+        matchId: parseInt(params.matchId as string),
+        team1Sets,
+        team2Sets,
+        team1Games,
+        team2Games,
+        durationSeconds,
+        username,
+      });
+
+      Alert.alert(t("success", language), "Match updated successfully!", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+    } catch (error: any) {
+      Alert.alert(t("error", language), error.message || "Failed to update match");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleResetScores = () => {
+    Alert.alert("Reset Scores", "Reset all scores to 0?", [
+      { text: "Cancel", onPress: () => {} },
+      {
+        text: "Reset",
+        onPress: () => {
+          setTeam1Sets(0);
+          setTeam2Sets(0);
+          setTeam1Games(0);
+          setTeam2Games(0);
+        },
+        style: "destructive",
+      },
+    ]);
+  };
+
+  return (
+    <ScreenContainer className="p-6">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+        <View className="flex-1 gap-6">
+          {/* Header */}
+          <View className="gap-2">
+            <View className="flex-row justify-end">
+              <HomeButton />
+            </View>
+            <Text className="text-2xl font-bold text-foreground text-center">Edit Match</Text>
+            <Text className="text-xs text-foreground text-center">
+              {params.team1Player1} & {params.team1Player2} vs {params.team2Player1} & {params.team2Player2}
+            </Text>
+          </View>
+
+          {/* Match Duration - typeable */}
+          <View className="bg-surface border border-border rounded-2xl p-6 gap-3">
+            <Text className="text-sm font-bold text-foreground">Διάρκεια Αγώνα (Duration)</Text>
+            <DurationInput totalSeconds={durationSeconds} onChange={setDurationSeconds} />
+          </View>
+
+          {/* Team 1 Score Card */}
+          <View className="bg-primary rounded-2xl p-6 gap-4">
+            <View className="gap-1">
+              <Text className="text-sm font-bold text-white">Team 1</Text>
+              <Text className="text-xs text-white">
+                {params.team1Player1} & {params.team1Player2}
+              </Text>
+            </View>
+
+            {/* Sets and Games Display - tap the number to type it directly */}
+            <View className="flex-row gap-4">
+              <ScoreInput value={team1Sets} onChange={setTeam1Sets} label="Sets" colorClassName="text-primary" />
+              <ScoreInput value={team1Games} onChange={setTeam1Games} label="Games" colorClassName="text-primary" />
+            </View>
+
+            {/* Score Buttons */}
+            <View className="flex-row gap-2">
+              <TouchableOpacity
+                onPress={() => setTeam1Games(Math.max(0, team1Games - 1))}
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
+              >
+                <Text className="text-white font-bold text-center">-1 Game</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setTeam1Games(team1Games + 1)}
+                className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
+              >
+                <Text className="text-primary font-bold text-center">+1 Game</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setTeam1Sets(team1Sets + 1)}
+                className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
+              >
+                <Text className="text-primary font-bold text-center">+1 Set</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setTeam1Sets(Math.max(0, team1Sets - 1))}
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
+              >
+                <Text className="text-white font-bold text-center">-1 Set</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Team 2 Score Card */}
+          <View className="bg-error rounded-2xl p-6 gap-4">
+            <View className="gap-1">
+              <Text className="text-sm font-bold text-white">Team 2</Text>
+              <Text className="text-xs text-white">
+                {params.team2Player1} & {params.team2Player2}
+              </Text>
+            </View>
+
+            {/* Sets and Games Display - tap the number to type it directly */}
+            <View className="flex-row gap-4">
+              <ScoreInput value={team2Sets} onChange={setTeam2Sets} label="Sets" colorClassName="text-error" />
+              <ScoreInput value={team2Games} onChange={setTeam2Games} label="Games" colorClassName="text-error" />
+            </View>
+
+            {/* Score Buttons */}
+            <View className="flex-row gap-2">
+              <TouchableOpacity
+                onPress={() => setTeam2Games(Math.max(0, team2Games - 1))}
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
+              >
+                <Text className="text-white font-bold text-center">-1 Game</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setTeam2Games(team2Games + 1)}
+                className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
+              >
+                <Text className="text-error font-bold text-center">+1 Game</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setTeam2Sets(team2Sets + 1)}
+                className="flex-1 bg-white rounded-lg py-3 active:opacity-80"
+              >
+                <Text className="text-error font-bold text-center">+1 Set</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setTeam2Sets(Math.max(0, team2Sets - 1))}
+                className="flex-1 bg-black/25 border border-white/40 rounded-lg py-3 active:opacity-60"
+              >
+                <Text className="text-white font-bold text-center">-1 Set</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Action Buttons */}
+          <View className="gap-3 mt-4">
+            <TouchableOpacity
+              onPress={handleSaveChanges}
+              disabled={isSaving}
+              className="bg-primary rounded-lg py-4 active:opacity-80 disabled:opacity-50"
+            >
+              <Text className="text-white font-bold text-center text-lg">
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleResetScores}
+              className="bg-warning rounded-lg py-4 active:opacity-80"
+            >
+              <Text className="text-white font-bold text-center">Reset Scores</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="bg-surface border border-border rounded-lg py-4 active:opacity-80"
+            >
+              <Text className="text-foreground font-semibold text-center">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </ScreenContainer>
+  );
+}
+
   const [team2Games, setTeam2Games] = useState(0);
   const [durationSeconds, setDurationSeconds] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
