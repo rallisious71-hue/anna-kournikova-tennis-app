@@ -20,11 +20,13 @@ function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
 
+// Password is intentionally set equal to the username for every account,
+// per project requirements. Change this if you need real security.
 const ACCOUNTS: { name: string; username: string; password: string; role: "admin" | "user" }[] = [
-  { name: "ΣΤΕΦΑΝΟΣ", username: "stefanos", password: "BCrbLdvjDT", role: "user" },
-  { name: "ΑΝΔΡΕΑΣ", username: "andreas", password: "gxfgu0tOvC", role: "user" },
-  { name: "ΝΟΤΗΣ", username: "notis", password: "ruOw3MCBAS", role: "user" },
-  { name: "ΜΑΝΟΣ", username: "manos", password: "WRruiiEjt9", role: "user" },
+  { name: "ΣΤΕΦΑΝΟΣ", username: "stefanos", password: "stefanos", role: "user" },
+  { name: "ΑΝΔΡΕΑΣ", username: "andreas", password: "andreas", role: "user" },
+  { name: "ΝΟΤΗΣ", username: "notis", password: "notis", role: "user" },
+  { name: "ΜΑΝΟΣ", username: "manos", password: "manos", role: "user" },
   { name: "Admin", username: "admin", password: "admin", role: "admin" },
 ];
 
