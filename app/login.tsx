@@ -37,7 +37,13 @@ export default function LoginScreen() {
         router.replace("/(tabs)");
       }
     } catch (error: any) {
-      Alert.alert(t("error", language), error.message || t("invalidCredentials", language));
+      const message: string = error?.message || "";
+      const friendlyMessage = message.includes("Database not available")
+        ? language === "en"
+          ? "Cannot reach the server database. Make sure DATABASE_URL is set and the server is running (see .env.example)."
+          : "Δεν είναι δυνατή η σύνδεση με τη βάση δεδομένων του server. Βεβαιωθείτε ότι έχει οριστεί το DATABASE_URL και ότι ο server τρέχει (δείτε .env.example)."
+        : message || t("invalidCredentials", language);
+      Alert.alert(t("error", language), friendlyMessage);
     } finally {
       setIsLoading(false);
     }

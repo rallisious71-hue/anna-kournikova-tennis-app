@@ -1,10 +1,12 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert, Switch } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, Alert, Switch, TextInput } from "react-native";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { HomeButton } from "@/components/home-button";
 import { useLanguage } from "@/lib/language-context";
 import { useThemeContext } from "@/lib/theme-provider";
 import { t } from "@/lib/i18n/translations";
+import { trpc } from "@/lib/trpc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingsScreen() {
@@ -14,8 +16,54 @@ export default function SettingsScreen() {
 
   const isDark = colorScheme === "dark";
 
+  const [username, setUsername] = useState<string | null>(null);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  const changePasswordMutation = trpc.players.changePassword.useMutation();
+
+  useEffect(() => {
+    AsyncStorage.getItem("username").then(setUsername);
+  }, []);
+
   const handleDarkModeToggle = (value: boolean) => {
     setColorScheme(value ? "dark" : "light");
+  };
+
+  const handleChangePassword = async () => {
+    if (!username) {
+      Alert.alert(t("error", language), t("invalidCredentials", language));
+      return;
+    }
+
+    if (!currentPassword.trim() || !newPassword.trim() || !confirmNewPassword.trim()) {
+      Alert.alert(t("error", language), t("fillAllFields", language));
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      Alert.alert(t("error", language), t("passwordMismatch", language));
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      await changePasswordMutation.mutateAsync({
+        username,
+        currentPassword,
+        newPassword,
+      });
+      Alert.alert(t("success", language), t("passwordChanged", language));
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    } catch (error: any) {
+      Alert.alert(t("error", language), error.message || t("currentPasswordIncorrect", language));
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -185,6 +233,60 @@ export default function SettingsScreen() {
               <Text className={`font-black text-lg ${isDark ? "text-yellow-300" : "text-yellow-600"}`}>
                 {language === "en" ? "ACCOUNT" : "ΛΟΓΑΡΙΑΣΜΟΣ"}
               </Text>
+
+              {/* Change Password */}
+              <View className="gap-3">
+                <Text className={`font-bold text-sm ${isDark ? "text-gray-200" : "text-gray-700"}`}>
+                  {t("changePassword", language)}
+                </Text>
+                <Text className={`text-xs ${isDark ? "text-cyan-300" : "text-gray-600"}`}>
+                  {t("changePasswordDesc", language)}
+                </Text>
+
+                <TextInput
+                  placeholder={t("currentPassword", language)}
+                  placeholderTextColor="#9BA1A6"
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                  secureTextEntry
+                  editable={!isChangingPassword}
+                  className={`rounded-lg px-4 py-3 border ${
+                    isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-300 text-black"
+                  }`}
+                />
+                <TextInput
+                  placeholder={t("newPassword", language)}
+                  placeholderTextColor="#9BA1A6"
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                  secureTextEntry
+                  editable={!isChangingPassword}
+                  className={`rounded-lg px-4 py-3 border ${
+                    isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-300 text-black"
+                  }`}
+                />
+                <TextInput
+                  placeholder={t("confirmNewPassword", language)}
+                  placeholderTextColor="#9BA1A6"
+                  value={confirmNewPassword}
+                  onChangeText={setConfirmNewPassword}
+                  secureTextEntry
+                  editable={!isChangingPassword}
+                  className={`rounded-lg px-4 py-3 border ${
+                    isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-50 border-gray-300 text-black"
+                  }`}
+                />
+
+                <TouchableOpacity
+                  onPress={handleChangePassword}
+                  disabled={isChangingPassword}
+                  className="bg-yellow-500 rounded-lg py-4 border-2 border-yellow-600 active:scale-95 disabled:opacity-50"
+                >
+                  <Text className="text-black font-black text-center">
+                    {isChangingPassword ? t("loading", language) : t("changePassword", language)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
               {/* Logout Button */}
               <TouchableOpacity
