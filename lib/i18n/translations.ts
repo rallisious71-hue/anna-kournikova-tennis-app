@@ -45,6 +45,14 @@ export const translations = {
     passwordMismatch: "Passwords do not match",
     registerSuccess: "Account created successfully!",
     logout: "Logout",
+    changePassword: "Change Password",
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    confirmNewPassword: "Confirm New Password",
+    changePasswordDesc: "Update the password for your account",
+    passwordChanged: "Password changed successfully",
+    currentPasswordIncorrect: "Current password is incorrect",
+    fillAllFields: "Please fill in all fields",
 
     // New Match
     newMatchTitle: "New Match",
@@ -140,6 +148,14 @@ export const translations = {
     passwordMismatch: "Οι κωδικοί πρόσβασης δεν ταιριάζουν",
     registerSuccess: "Ο λογαριασμός δημιουργήθηκε με επιτυχία!",
     logout: "Αποσύνδεση",
+    changePassword: "Αλλαγή Κωδικού",
+    currentPassword: "Τρέχων Κωδικός",
+    newPassword: "Νέος Κωδικός",
+    confirmNewPassword: "Επιβεβαίωση Νέου Κωδικού",
+    changePasswordDesc: "Ενημερώστε τον κωδικό πρόσβασης του λογαριασμού σας",
+    passwordChanged: "Ο κωδικός άλλαξε με επιτυχία",
+    currentPasswordIncorrect: "Ο τρέχων κωδικός είναι λανθασμένος",
+    fillAllFields: "Παρακαλώ συμπληρώστε όλα τα πεδία",
 
     // New Match
     newMatchTitle: "Νέος Αγώνας",
