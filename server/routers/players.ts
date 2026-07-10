@@ -94,6 +94,41 @@ export const playersRouter = router({
     }),
 
   /**
+   * Change password for an existing player.
+   * Requires the current username + current password to verify identity,
+   * then updates to the new password.
+   */
+  changePassword: publicProcedure
+    .input(
+      z.object({
+        username: z.string().min(1, "Username is required"),
+        currentPassword: z.string().min(1, "Current password is required"),
+        newPassword: z.string().min(3, "New password must be at least 3 characters"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const player = await db.select().from(players).where(eq(players.username, input.username)).limit(1);
+
+      if (player.length === 0) {
+        throw new Error("Invalid credentials");
+      }
+
+      const currentHash = hashPassword(input.currentPassword);
+      if (player[0].passwordHash !== currentHash) {
+        throw new Error("Current password is incorrect");
+      }
+
+      const newHash = hashPassword(input.newPassword);
+
+      await db.update(players).set({ passwordHash: newHash }).where(eq(players.username, input.username));
+
+      return { success: true };
+    }),
+
+  /**
    * Get all players
    */
   getAllPlayers: publicProcedure.query(async () => {
